@@ -98,7 +98,10 @@ export const ContentPressure = {
 
     await expect(mediaBlock).toHaveClass('pathable-media-block')
     await expect(mediaBlockStyles.display).toBe('flex')
-    await expect(mediaBlockStyles.alignItems).toBe('flex-start')
+    // Chromium 159+ serializes a computed `flex-start` as `flow-start`.
+    await expect(['flex-start', 'flow-start']).toContain(
+      mediaBlockStyles.alignItems,
+    )
     await expect(window.getComputedStyle(media).flexShrink).toBe('0')
     await expect(window.getComputedStyle(body).flexGrow).toBe('1')
     await expect(heading).toBeVisible()

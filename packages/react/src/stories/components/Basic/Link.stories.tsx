@@ -92,7 +92,7 @@ export const CustomAttributes: Story = {
   render: () => (
     <Link
       href="#custom-attrs"
-      aria-label="Navigate to participant dashboard"
+      aria-label="Open Dashboard (opens in a new tab)"
       data-testid="dashboard-link"
       target="_blank"
       rel="noopener noreferrer"
