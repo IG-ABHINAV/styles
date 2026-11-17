@@ -128,6 +128,12 @@
       automerge: false,
     },
     {
+      description: 'Never update USWDS automatically. pnpm-workspace.yaml patches an exact @uswds/uswds version, so any bump leaves the patch unused (ERR_PNPM_UNUSED_PATCH) and must be done by hand together with porting the patch.',
+      matchManagers: ['npm'],
+      matchPackageNames: ['@uswds/uswds'],
+      enabled: false,
+    },
+    {
       description: 'Defer TypeScript major upgrades until typescript-eslint supports them. Its current peer range is <6.1.0 and it crashes at runtime against TS 7.',
       matchManagers: ['npm'],
       matchPackageNames: ['typescript'],
