@@ -150,27 +150,27 @@
 
   // -------- Typography: Custom Typeface Tokens (T003) --------
   $theme-typeface-tokens: (
-      'fredoka': (
-        'display-name': 'Fredoka',
-        'cap-height': 364px,
-        'stack': "'Fredoka', system-ui, sans-serif",
-      ),
-      'nunito': (
-        'display-name': 'Nunito',
-        'cap-height': 364px,
-        'stack': "'Nunito', system-ui, sans-serif",
-      ),
-      'poppins': (
-        'display-name': 'Poppins',
-        'cap-height': 364px,
-        'stack': "'Poppins', system-ui, sans-serif",
-      ),
-      'montserrat': (
-        'display-name': 'Montserrat',
-        'cap-height': 364px,
-        'stack': "'Montserrat', system-ui, sans-serif",
-      )
+    'fredoka': (
+      'display-name': 'Fredoka',
+      'cap-height': 364px,
+      'stack': "'Fredoka', system-ui, sans-serif",
     ),
+    'nunito': (
+      'display-name': 'Nunito',
+      'cap-height': 364px,
+      'stack': "'Nunito', system-ui, sans-serif",
+    ),
+    'poppins': (
+      'display-name': 'Poppins',
+      'cap-height': 364px,
+      'stack': "'Poppins', system-ui, sans-serif",
+    ),
+    'montserrat': (
+      'display-name': 'Montserrat',
+      'cap-height': 364px,
+      'stack': "'Montserrat', system-ui, sans-serif",
+    ),
+  ),
 
   // -------- Typography: Font Family Type Assignments (T004) --------
   // Font types map to custom typeface token names from
