@@ -2,49 +2,41 @@
   ------------------------------------------------------------------
   Sync Impact Report
   ------------------------------------------------------------------
-  Version change: 1.3.0 → 1.4.0
+  Version change: 1.4.1 → 1.5.0 (MINOR)
+  Rationale: Principle XII named an Astro documentation site as the curated
+    public entry point, but no such site exists and maintainers decided not to
+    build one. XII now assigns the public entry-point role to the root README
+    and package READMEs. XII's governing rule (one canonical source per fact,
+    other surfaces derive from or link to it) is unchanged.
+  Why MINOR, not MAJOR: no principle is removed and XII's rule is not
+    redefined; the list of documentation surfaces changes and the entry-point
+    responsibility moves to surfaces that already exist. No existing artifact
+    becomes non-compliant, because the Astro site was never built.
   Principles modified:
-    - IV: "Wrapper Packages Are Thin Consumers" → "Wrapper Packages Preserve
-      Semantic and Visual Parity" (expanded with semantic HTML, accessibility
-      behavior, class contracts, type safety, and publishable validation)
-    - X: "Accessibility Is Part of Token Quality" → "Accessibility Is a Release
-      Requirement" (expanded with static linting, rendered testing, keyboard
-      behavior, focus management, and manual-review dimensions)
-    - XII: "Documentation Is a First-Class Package Concern" → "Documentation
-      Surfaces Have Distinct Responsibilities" (expanded with canonical-source
-      rules for Astro docs, Storybook, READMEs, and specs)
-  Principles added:
-    - XIV: Storybook Stories Are Executable Component Contracts
-    - XV: Responsive and Inclusive States Are First-Class
-    - XVI: Framework Storybooks Must Remain Independently Valid
-  Sections added:
-    - Automated Validation & Quality Gates (expands and replaces the former
-      "Development Workflow & Quality Gates" section; adds enforceable gate,
-      file-exclusion, and local/CI consistency rules)
-    - Visual Regression Protection (new subsection under Quality Gates)
+    - XII: "Documentation Surfaces Have Distinct Responsibilities" — Astro
+      docs site removed; root and package READMEs are the public entry points;
+      contributor/agent instructions keep operational procedures; "even before
+      the full docs site exists" removed
+  Principles added: none
+  Principles removed: none
+  Sections added: none
   Sections removed: none
-  Templates requiring updates:
-    - .specify/templates/plan-template.md           → updated with expanded Constitution Check
-    - .specify/templates/spec-template.md            → updated with accessibility, story, and
-                                                       responsive-state guidance
-    - .specify/templates/tasks-template.md           → updated with story, interaction,
-                                                       a11y, responsive, visual, package,
-                                                       and documentation task categories
-    - .specify/templates/constitution-template.md    → reviewed; generic template — no
-                                                       project-specific content to sync
-    - .specify/templates/checklist-template.md       → reviewed; generic template — no
-                                                       project-specific content to sync
-    - .specify/presets/workflow-preset/commands/*.md → reviewed; no constitution-specific
-                                                       change required
-    - .specify/presets/workflow-preset/templates/    → reviewed; no constitution-specific
-                                                       change required
-    - .specify/presets/toc-navigation/*              → reviewed; no constitution-specific
-                                                       change required
-    - .specify/extensions/git/commands/*.md          → reviewed; no constitution-specific
-                                                       change required
-    - .specify/extensions/agent-context/commands/*.md→ reviewed; no constitution-specific
-                                                       change required
-  Follow-up TODOs: none deferred
+  Migration plan: none required; no docs site work is in flight. Existing
+    specs/ and docs/plans/ records are historical and keep their wording.
+  Templates requiring updates (deferred: the templates are owned by the Spec
+  Kit upgrade workflow, and project customisations will move into a preset):
+    - .specify/templates/plan-template.md → "Astro docs site" under
+      Documentation Surface Ownership
+    - .specify/templates/tasks-template.md → "Update package README or Astro
+      docs" example task
+    - .specify/templates/spec-template.md → reviewed; no Astro reference
+  Follow-up TODOs:
+    - Move project-specific template customisations (including the Astro
+      mentions above) into a Spec Kit preset.
+  Previous amendment: 1.4.0 → 1.4.1 (2026-11-17) corrected package names to
+    `@pathableai/*` in the constitution. The matching template edits were
+    reverted so the templates stay identical to the Spec Kit upgrade
+    workflow's output; they still say `@pathable/*`.
   ------------------------------------------------------------------
 -->
 
@@ -52,9 +44,9 @@
 
 ## Core Principles
 
-### I. @pathable/styles Is the Authoritative Workspace
+### I. @pathableai/styles Is the Authoritative Workspace
 
-The `packages/styles` workspace and `@pathable/styles` package are the
+The `packages/styles` workspace and `@pathableai/styles` package are the
 authoritative source for PathAble visual design foundations, component-class
 contracts, tokens, fonts, icons, compiled CSS, and framework-neutral behavior.
 No wrapper package, application package, Storybook app, or framework adapter may
@@ -65,7 +57,7 @@ packages then consume that contract.
 
 ### II. CSS Custom Properties Are the Runtime Contract
 
-The `@pathable/styles` package's primary public contract is compiled CSS custom
+The `@pathableai/styles` package's primary public contract is compiled CSS custom
 properties and component classes. Color, typography, spacing, radius, elevation,
 focus, state, theme, and component wrapper tokens MUST be available in the
 published `dist` output. Consumers MUST be able to import the compiled CSS and
@@ -117,12 +109,12 @@ policy.
 ### V. Consumer Imports Must Be Complete
 
 Consumers of a wrapper package MUST be able to install and import that wrapper
-without also importing `@pathable/styles` in application code. A client that
-adds `@pathable/react` as a dependency and imports from `@pathable/react` MUST
-receive the required `@pathable/styles` CSS, fonts, icons, JavaScript helpers,
+without also importing `@pathableai/styles` in application code. A client that
+adds `@pathableai/react` as a dependency and imports from `@pathableai/react` MUST
+receive the required `@pathableai/styles` CSS, fonts, icons, JavaScript helpers,
 and other published assets automatically through the wrapper package's
 dependency graph and entrypoints. Wrapper packages MUST declare
-`@pathable/styles` as a runtime dependency, import the required compiled
+`@pathableai/styles` as a runtime dependency, import the required compiled
 styles/assets at their public entrypoint, and verify that package output
 contains the transitive assets needed by consumers.
 
@@ -132,13 +124,13 @@ The repository MUST be structured as a pnpm workspace with a root
 `pnpm-workspace.yaml` manifest. Shared scripts (lint, format, audit) SHOULD be
 runnable from the root where practical. Package-specific scripts MUST remain
 inside their package's `package.json`. Workspace boundaries MUST be respected:
-future Vue, React, Tailwind, and docs packages MUST consume `@pathable/styles`
-via workspace protocol (`"@pathable/styles": "workspace:*"`) rather than
+future Vue, React, Tailwind, and docs packages MUST consume `@pathableai/styles`
+via workspace protocol (`"@pathableai/styles": "workspace:*"`) rather than
 duplicating or redefining styles, assets, or token definitions.
 
 ### VII. Published Artifacts Must Be Reliable
 
-The `@pathable/styles` package MUST publish compiled CSS, JavaScript helpers,
+The `@pathableai/styles` package MUST publish compiled CSS, JavaScript helpers,
 fonts, icons, and original SCSS source files for advanced consumers. The
 `package.json` MUST declare clear `exports` for compiled CSS, JavaScript
 helpers, distribution assets, and opt-in source access. Builds MUST be
@@ -198,11 +190,11 @@ Periodic manual keyboard and assistive-technology review SHOULD be performed
 as a quality practice on a schedule defined by contributor documentation. This
 is a quality expectation, not an automated gate.
 
-### XI. Framework Independence Comes from @pathable/styles
+### XI. Framework Independence Comes from @pathableai/styles
 
-The `@pathable/styles` package MUST NOT require Nuxt, Vue, React, Tailwind,
+The `@pathableai/styles` package MUST NOT require Nuxt, Vue, React, Tailwind,
 Vite, Svelte, Angular, or any specific application framework. Vue, React,
-Tailwind, and docs workspaces MUST consume `@pathable/styles` as downstream
+Tailwind, and docs workspaces MUST consume `@pathableai/styles` as downstream
 packages — they MUST NOT embed, redefine, or regenerate the source of truth.
 Framework-specific packages MAY map the styles contract into framework-native
 APIs, but the canonical definitions always reside in `packages/styles`.
@@ -213,18 +205,18 @@ Documentation surfaces MUST avoid contradictory sources of truth. When the same
 fact must appear on multiple surfaces, one surface is the canonical source and
 others derive from or link to it.
 
-- The Astro documentation site is the curated public entry point for
-  installation, foundations, brand guidance, agent guidance, and roadmap
-  information.
+- The root README and the package READMEs are the public entry points for
+  installation, foundations, brand guidance, and consumer usage of each
+  published package.
 - Storybook is the exhaustive, executable catalog for components, states,
   interactions, accessibility, and compositions.
-- Package READMEs and contributor/agent instructions contain operational
-  commands and authoring procedures.
+- Contributor and agent instructions contain operational commands and
+  authoring procedures.
 - Specifications and plans describe feature-specific requirements and
   implementation decisions.
 
 The repository MUST include enough README documentation to support each
-published package independently, even before the full docs site exists.
+published package independently.
 
 ### XIII. Versioning and Release Discipline
 
@@ -303,10 +295,10 @@ affected Storybooks rather than only the package where the source edit occurred.
   node-sass are not supported.
 - **Styles package dependencies**: Runtime dependencies MUST be limited to
   framework-neutral style foundations such as USWDS. Framework-specific
-  runtime dependencies MUST NOT be added to `@pathable/styles`.
+  runtime dependencies MUST NOT be added to `@pathableai/styles`.
 - **Wrapper package dependencies**: Wrapper packages MUST list
-  `@pathable/styles` as a runtime dependency and MUST NOT require client code to
-  import `@pathable/styles` separately for normal use.
+  `@pathableai/styles` as a runtime dependency and MUST NOT require client code to
+  import `@pathableai/styles` separately for normal use.
 - **Node version**: The repository root MUST declare an `engines.node` range in
   `package.json` that all workspace packages support.
 - **Lockfile**: `pnpm-lock.yaml` MUST be committed to the repository for
@@ -318,7 +310,7 @@ affected Storybooks rather than only the package where the source edit occurred.
   fonts, icons, and asset contracts MUST be added to `packages/styles` before a
   wrapper package exposes them.
 - **No wrapper-only styling**: Wrapper packages MUST NOT introduce private CSS
-  that changes visual semantics outside the `@pathable/styles` contract.
+  that changes visual semantics outside the `@pathableai/styles` contract.
 - **Semantic and visual parity**: Wrapper components MUST preserve the shared
   package's semantic HTML, accessibility behavior, class contracts, design
   tokens, and intended visual behavior.
@@ -326,7 +318,7 @@ affected Storybooks rather than only the package where the source edit occurred.
   package the compiled styles and assets required for normal consumer use.
 - **Transitive installability**: `pnpm pack --dry-run` or equivalent validation
   MUST demonstrate that a wrapper package can be installed and imported without
-  a separate client-side `@pathable/styles` import.
+  a separate client-side `@pathableai/styles` import.
 - **Type safety**: Public component APIs and generated declarations MUST be
   type-safe and suitable for consumers.
 - **Publishable validation**: Publishable artifacts MUST be validated as
@@ -483,4 +475,4 @@ this constitution. Violations MUST be documented in their complexity tracking
 section with justification. Complexity is not automatically forbidden but it
 MUST be transparent and justified.
 
-**Version**: 1.4.0 | **Ratified**: 2026-07-04 | **Last Amended**: 2026-07-19
+**Version**: 1.5.0 | **Ratified**: 2026-07-04 | **Last Amended**: 2026-11-17
