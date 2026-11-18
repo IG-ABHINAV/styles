@@ -206,6 +206,18 @@ const STORIES = [
     id: 'components-communication-modal--long-content',
     key: 'modal/long-content',
   },
+  // PageError has no aggregate story; `full-page` is its only canonical story.
+  // It shows the centred column (icon, heading, body and actions on one centre
+  // line, #288), the large heading and icon sizes, the borderless transparent
+  // panel and the retry button under keyboard focus (Chromium's default ring,
+  // accepted by the maintainer until #302 gives buttons a token focus style).
+  // Not compared: the compact panel's border, surface, radius and
+  // start-aligned actions, the not-found and access-restricted icon colours,
+  // and the max-width 480px rules.
+  {
+    id: 'components-feedback-pageerror--full-page',
+    key: 'page-error/full-page',
+  },
 ]
 
 /** Components whose baselines are enforced. Only these are compared. */
@@ -222,6 +234,7 @@ const ROLLOUT = [
   'interaction-states',
   'modal',
   'optional-form-section',
+  'page-error',
   'segmented-control',
   'select',
   'textarea',
