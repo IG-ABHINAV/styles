@@ -60,10 +60,29 @@ const STORIES = [
     id: 'interaction-controls-icon-tile--all-variants',
     key: 'icon-tile/all-variants',
   },
+  // OptionalFormSection has no aggregate story. Collapsed (`default`) shows
+  // the button, its focus outline and the down indicator at every viewport.
+  {
+    id: 'components-form-controls-optional-form-section--default',
+    key: 'optional-form-section/default',
+  },
+  // Expanded has rules of its own: the button's square bottom corners, the
+  // rotated indicator and the content region's border and padding.
+  {
+    id: 'components-form-controls-optional-form-section--expanded',
+    key: 'optional-form-section/expanded',
+  },
+  // Content pressure: a wrapping heading shows the button's gap, the
+  // indicator's `flex: 0 0 auto` and `overflow-wrap`, which a one-line heading
+  // does not exercise; its play function asserts only the absence of overflow.
+  {
+    id: 'components-form-controls-optional-form-section--narrow',
+    key: 'optional-form-section/narrow',
+  },
 ]
 
 /** Components whose baselines are enforced. Only these are compared. */
-const ROLLOUT = ['icon-button', 'icon-tile']
+const ROLLOUT = ['icon-button', 'icon-tile', 'optional-form-section']
 
 // ---------------------------------------------------------------------------
 
