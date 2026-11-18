@@ -139,10 +139,10 @@ const STORIES = [
     key: 'filterable-option-list/empty',
   },
   // Modal has no aggregate story. `open` shows the overlay, the centred
-  // dialog and the close button in its top-right corner; it is the first
-  // control, so the capture's Tab shows its focus ring. Its image also shows
-  // the open content-padding (#284) and outline-button (#287) defects,
-  // accepted by the maintainer for #285; their fixes update it. Not shown:
+  // dialog, the content padding on every side and the close button in its
+  // top-right corner; it is the first control, so the capture's Tab shows its
+  // focus ring. Its image also shows the open outline-button defect (#287),
+  // accepted by the maintainer for #285; its fix updates it. Not shown:
   // `narrow` and `long-content`, which wait on the mobile layout fix (#286).
   { id: 'components-communication-modal--open', key: 'modal/open' },
 ]
