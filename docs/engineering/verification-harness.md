@@ -31,15 +31,15 @@ shows it, `components-modal--dismissible`, is a plan row.
 
 ### Evidence channels
 
-| Channel                | What it observes                                                                                                                                                                                  |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `storybook-test`       | The Storybook test-runner on named stories: play-function interactions and the rendered axe check, through `pnpm test:storybook-styles` or `pnpm test:storybook-react`                            |
-| `visual`               | `pnpm test:visual`: the canonical styles stories render, at 375, 768 and 1280 px, without blank output or horizontal overflow                                                                     |
-| `browser`              | Playwright observation of specific stories in a built Storybook: keyboard order and focus placement, narrow and wide viewports, increased text size, `forced-colors` and `prefers-reduced-motion` |
-| `package`              | The packed packages as a consumer receives them: `check:package`, `check:types`, `pnpm test:next-consumer`                                                                                        |
-| `agent-guidance`       | `pnpm check:agent-guidance`: the consumer agent guidance matches the public API                                                                                                                   |
-| `unit-test`            | `pnpm --filter @pathableai/react test:unit`                                                                                                                                                       |
-| `assistive-technology` | A person's manual check with a screen reader or other assistive technology                                                                                                                        |
+| Channel                | What it observes                                                                                                                                                                                                                                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `storybook-test`       | The Storybook test-runner on named stories: play-function interactions and the rendered axe check, through `pnpm test:storybook-styles` or `pnpm test:storybook-react`                                                                                                                                               |
+| `visual`               | `pnpm test:visual`: the canonical styles stories render, at 375, 768 and 1280 px, without blank output or horizontal overflow. `pnpm test:pixels-styles`: pixel comparison with committed baselines, only for the stories listed for rollout components ([Pixel visual regression](../testing/visual-regression.md)) |
+| `browser`              | Playwright observation of specific stories in a built Storybook: keyboard order and focus placement, narrow and wide viewports, increased text size, `forced-colors` and `prefers-reduced-motion`                                                                                                                    |
+| `package`              | The packed packages as a consumer receives them: `check:package`, `check:types`, `pnpm test:next-consumer`                                                                                                                                                                                                           |
+| `agent-guidance`       | `pnpm check:agent-guidance`: the consumer agent guidance matches the public API                                                                                                                                                                                                                                      |
+| `unit-test`            | `pnpm --filter @pathableai/react test:unit`                                                                                                                                                                                                                                                                          |
+| `assistive-technology` | A person's manual check with a screen reader or other assistive technology                                                                                                                                                                                                                                           |
 
 Pick the channel that can actually observe the fact. Constitution XIV to XVI
 decide what usually needs which: interactive behaviour needs `storybook-test`
@@ -193,7 +193,13 @@ screenshots and transcripts are not committed.
 ### Screenshots for visual claims
 
 For a claim about visual appearance, such as a token value, spacing, a focus
-indicator or `forced-colors` rendering, the verifier also captures Playwright
+indicator or `forced-colors` rendering, the evidence is the committed
+[pixel baselines](../testing/visual-regression.md) where they cover the named
+story: the `visual` channel compares them, and the pull request's file diff
+shows any baseline change. Baselines cover only the stories listed for each
+workspace's rollout components, in their default rendering with the first
+interactive control focused. For the rest, including `forced-colors`,
+increased text size and reduced motion, the verifier captures Playwright
 screenshots of the named stories under the claim's conditions. GitHub's REST
 API cannot attach images to a comment, so it publishes them as one private
 review page per run (an Artifact in Claude Code sessions) and posts one pull
@@ -303,9 +309,11 @@ no new verification request.
 - `forced-colors` and `prefers-reduced-motion` are emulated in Chromium only.
   They do not establish behaviour in Windows High Contrast or other browsers.
 - `test:visual` measures render health and overflow; it does not compare
-  pixels. A claim about exact visual appearance is judged by a person from the
-  verifier's [screenshots](#screenshots-for-visual-claims) and the story links
-  the pull request names.
+  pixels. The pixel suites compare pixels only for the stories listed for
+  rollout components. A claim about exact visual appearance outside that coverage is judged
+  by a person from the verifier's
+  [screenshots](#screenshots-for-visual-claims) and the story links the pull
+  request names.
 - A claim that a downstream application works with a change cannot be
   established here, and the verifier never attaches or runs another
   repository. `test:next-consumer` is the in-repository consumer proxy. When a

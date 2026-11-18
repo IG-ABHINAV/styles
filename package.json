@@ -41,6 +41,8 @@
     "verify:show": "node scripts/verify.mjs show",
     "check:agent-guidance-impact": "node scripts/check-agent-guidance-impact.mjs",
     "test:visual": "node packages/styles/scripts/test-visual.mjs",
+    "test:pixels-styles": "node packages/styles/scripts/test-pixels.mjs",
+    "test:pixels-styles:update": "node packages/styles/scripts/test-pixels.mjs --update",
     "storybook:coverage": "node packages/styles/scripts/storybook-coverage.mjs",
     "quality-gates": "node packages/styles/scripts/quality-gates.mjs",
     "changeset": "changeset",
