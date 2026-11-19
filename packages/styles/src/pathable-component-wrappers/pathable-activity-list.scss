@@ -108,9 +108,7 @@
 
 .pathable-activity-row__body {
   flex: 1;
-  // Reserve a usable width so long status, date and owner text shrink first
-  // and the title and context truncate instead of collapsing to nothing.
-  min-width: min(12rem, 100%);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--pathable-space-0);
@@ -213,6 +211,17 @@
 
   .pathable-activity-row__title {
     font-size: var(--pathable-font-size-body-md);
+  }
+}
+
+// --- Wide screens: give the body a real share of the row ---
+
+// With a flex basis of 0 the body loses all of the row to long status, date and
+// owner text. A basis of half the row makes it shrink in proportion to its size,
+// so long side text gives up space first and short text barely changes.
+@media (min-width: 641px) {
+  .pathable-activity-row__body {
+    flex: 1 1 50%;
   }
 }
 
