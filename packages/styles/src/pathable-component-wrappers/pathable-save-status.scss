@@ -3,6 +3,10 @@
 // Standalone save-status indicator. Reusable outside the workflow panel context
 // (e.g., in form wizards, settings pages).
 //
+// The saved, offline and error labels use the body text colour: the state
+// colours (Intelligent Jade, amber, red) are below 4.5:1 on white or on the
+// page background. The symbol and the label word carry the state.
+//
 // States: --loading, --saving, --saved, --offline, --error, --idle
 // Each state displays both a text label and a visual indicator.
 //
@@ -58,7 +62,7 @@
 
 // Saved
 .pathable-save-status--saved {
-  color: color('success');
+  color: var(--pathable-color-text);
 }
 
 .pathable-save-status--saved::before {
@@ -72,7 +76,7 @@
 
 // Offline
 .pathable-save-status--offline {
-  color: color('warning');
+  color: var(--pathable-color-text);
 }
 
 .pathable-save-status--offline::before {
@@ -85,7 +89,7 @@
 
 // Error
 .pathable-save-status--error {
-  color: color('error');
+  color: var(--pathable-color-text);
 }
 
 .pathable-save-status--error::before {
