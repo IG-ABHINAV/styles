@@ -111,7 +111,7 @@ export const Offline = {
     docs: {
       description: {
         story:
-          'The offline state displays a warning banner indicating network connectivity was lost. Primary actions are disabled until the connection is restored.',
+          'The offline state displays a warning banner indicating network connectivity was lost. The modifier shows the status only; the application disables the continue button with `disabled` or `aria-disabled` until the connection is restored.',
       },
     },
   },
