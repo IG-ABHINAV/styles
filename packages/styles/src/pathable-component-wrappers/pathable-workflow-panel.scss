@@ -124,11 +124,6 @@
     color: color('warning-darker');
     font-size: type-scale('sm');
   }
-
-  .pathable-workflow-panel__actions .pathable-button--continue {
-    opacity: 0.6;
-    pointer-events: none;
-  }
 }
 
 // Validation error state
