@@ -214,15 +214,17 @@
   }
 }
 
-// --- Wide screens: size the body from its content ---
+// --- Wide screens: cap the side columns ---
 
-// With a flex basis of 0 the body loses all of the row to long status, date and
-// owner text. Starting from its content size makes it shrink in proportion to
-// that size, so it never collapses, and rows whose content fits do not shrink
-// at all.
+// The body's flex basis is 0, so long status, date and owner text used to claim
+// the whole row and squeeze the title and context to zero width. Each side
+// column now stops at 15% of the row. Text shorter than that keeps its natural
+// width, and a long title or context cannot squeeze the side columns.
 @media (min-width: 641px) {
-  .pathable-activity-row__body {
-    flex: 1 1 auto;
+  .pathable-activity-row__status-text,
+  .pathable-activity-row__date,
+  .pathable-activity-row__owner {
+    max-width: 15%;
   }
 }
 
