@@ -172,6 +172,17 @@
   align-items: center;
   gap: var(--pathable-space-1);
   flex-shrink: 0;
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+
+  // Buttons keep their own width at every viewport. The button's
+  // full-width rule below 30em would otherwise resolve against this
+  // content-sized region and squeeze the buttons to equal shares.
+  .pathable-button {
+    width: auto;
+    margin: 0;
+  }
 
   // Actions visible on row hover/focus
   opacity: 0;

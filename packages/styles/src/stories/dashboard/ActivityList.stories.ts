@@ -109,6 +109,48 @@ export const Mobile = {
   `,
 }
 
+export const MultipleActionsNarrow = {
+  globals: { viewport: { value: 'mobile1', isRotated: false } },
+  render: () => `
+    <div class="pathable-activity-list" role="list">
+      ${activityRow(
+        'Employment plan review',
+        'Participant: James Chen',
+        '1:15 PM',
+        'You',
+        'in-progress',
+        '<button class="pathable-button pathable-button--outline">View details</button><button class="pathable-button pathable-button--outline">Reassign</button><button class="pathable-button pathable-button--outline">Edit</button>',
+      )}
+    </div>
+  `,
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const row = canvasElement.querySelector<HTMLElement>(
+      '.pathable-activity-row',
+    )
+    if (!row) throw new Error('Activity row not found')
+    const rowRect = row.getBoundingClientRect()
+    const buttons = Array.from(
+      row.querySelectorAll<HTMLElement>(
+        '.pathable-activity-row__actions .pathable-button',
+      ),
+    )
+    for (const button of buttons) {
+      const rect = button.getBoundingClientRect()
+      if (rect.right > rowRect.right + 0.5) {
+        throw new Error(
+          `${button.textContent} ends at ${rect.right}px, past the row at ${rowRect.right}px`,
+        )
+      }
+      if (rect.height > 50) {
+        throw new Error(`${button.textContent} wraps onto several lines`)
+      }
+    }
+    if (document.documentElement.scrollWidth > window.innerWidth) {
+      throw new Error('The page scrolls horizontally')
+    }
+  },
+}
+
 export const Empty = {
   render: () => `
     <div class="pathable-activity-list pathable-activity-list--empty">
