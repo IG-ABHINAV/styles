@@ -13,7 +13,6 @@
 // Semantic page heading for the current step. Declared before the gap rule on
 // purpose: both have the same specificity, so the heading's margin reset must
 // come first or it removes the wizard gap above the heading.
-// Semantic page heading for the current step
 .pathable-wizard__heading {
   margin: 0;
   font-size: type-scale('lg');
