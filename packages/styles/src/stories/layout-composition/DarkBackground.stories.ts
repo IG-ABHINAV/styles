@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { contrastRatio, findOpaqueBackground } from '../shared/contrast'
 
 export default {
-  title: 'Layout Composition/Dark background',
+  title: 'Layout Composition/Dark Background',
   tags: ['autodocs'],
   parameters: {
     docs: {
