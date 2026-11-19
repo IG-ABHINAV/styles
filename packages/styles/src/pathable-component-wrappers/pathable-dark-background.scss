@@ -16,4 +16,12 @@
   // controls in it fall back to --pathable-color-focus-ring even inside a
   // light surface that sets a dark ring.
   --pathable-surface-focus-ring: initial;
+
+  // The USWDS dark background recolours only p, span and a. A pathable-heading
+  // sets the theme text colour, which is the container colour in the default
+  // theme (1.00:1), so it takes the same reverse text colour as p and span
+  // (white on #00365c, 12.48:1).
+  .pathable-heading {
+    color: color($theme-text-reverse-color);
+  }
 }
