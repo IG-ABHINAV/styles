@@ -22,7 +22,7 @@ export const HeadingContrast = {
     docs: {
       description: {
         story:
-          'A `.pathable-heading` at each of the six levels inside `.pathable-dark-background`. The heading takes the same white as the `p` and `span` text in the container instead of the theme text colour, which is the container colour in the default theme. The play function checks every level against the container background for a contrast of at least 4.5:1.',
+          'A `.pathable-heading` at each of the six levels inside `.pathable-dark-background`. The heading takes the same white as the `p` and `span` text in the container instead of the theme text colour, which is the container colour in the default theme. A heading in a light `.pathable-surface--raised` nested in the container keeps the theme text colour. The play function checks every level, and the nested heading, against the background behind it for a contrast of at least 4.5:1.',
       },
     },
   },
@@ -35,6 +35,9 @@ export const HeadingContrast = {
         )
         .join('')}
       <p>Body text in the same container.</p>
+      <div class="pathable-surface pathable-surface--raised pathable-padding-3">
+        <h3 class="pathable-heading pathable-heading--level-3">Heading in a light surface</h3>
+      </div>
     </div>
   `,
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -55,5 +58,16 @@ export const HeadingContrast = {
 
       await expect(ratio).toBeGreaterThanOrEqual(4.5)
     }
+
+    const nested = canvas.getByRole('heading', {
+      name: 'Heading in a light surface',
+    })
+
+    await expect(
+      contrastRatio(
+        view.getComputedStyle(nested).color,
+        findOpaqueBackground(nested, view),
+      ),
+    ).toBeGreaterThanOrEqual(4.5)
   },
 }

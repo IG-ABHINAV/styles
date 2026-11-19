@@ -19,9 +19,13 @@
 
   // The USWDS dark background recolours only p, span and a. A pathable-heading
   // sets the theme text colour, which is the container colour in the default
-  // theme (1.00:1), so it takes the same white as p and span
-  // (white on #00365c, 12.48:1).
-  .pathable-heading {
+  // theme (1.00:1), so it takes the same white as p and span. The selector
+  // reaches only headings that sit in the container itself, or in a layout
+  // wrapper that is a direct child, so a heading in a light surface, card or
+  // modal nested in the container keeps the text colour it is readable in.
+  > .pathable-heading,
+  > :is(.pathable-stack, .pathable-cluster, .pathable-container)
+    > .pathable-heading {
     color: color('white');
   }
 }
