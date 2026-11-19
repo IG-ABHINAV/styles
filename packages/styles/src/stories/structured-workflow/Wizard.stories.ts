@@ -152,8 +152,8 @@ export const ValidationError = {
           </div>
           <div class="pathable-form-group">
             <label class="pathable-label" for="ve-email">Email</label>
-            <input class="pathable-input usa-input--error" id="ve-email" type="email" aria-describedby="ve-email-error" value="">
-            <span class="usa-error-message" id="ve-email-error" role="alert">Email is required</span>
+            <input class="pathable-input" aria-invalid="true" id="ve-email" type="email" aria-describedby="ve-email-error" value="">
+            <span class="pathable-error-message" id="ve-email-error" role="alert">Email is required</span>
           </div>
         </div>
       </div>

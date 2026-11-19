@@ -20,7 +20,7 @@ export const Text = {
 <label class="pathable-label" for="input-text">Text input</label>
 <input
   id="input-text"
-  class="pathable-input pathable-input--text"
+  class="pathable-input"
   type="text"
   placeholder="Enter text"
 />
@@ -34,7 +34,7 @@ export const Password = {
 <label class="pathable-label" for="input-password">Password</label>
 <input
   id="input-password"
-  class="pathable-input pathable-input--password"
+  class="pathable-input"
   type="password"
   placeholder="Enter password"
 />
@@ -46,7 +46,7 @@ export const Email = {
 <label class="pathable-label" for="input-email">Email address</label>
 <input
   id="input-email"
-  class="pathable-input pathable-input--email"
+  class="pathable-input"
   type="email"
   placeholder="you@example.com"
 />
@@ -58,7 +58,7 @@ export const Search = {
 <label class="pathable-label" for="input-search">Search</label>
 <input
   id="input-search"
-  class="pathable-input pathable-input--search"
+  class="pathable-input"
   type="search"
   placeholder="Search…"
 />
@@ -75,7 +75,7 @@ export const WorkflowRequiredComplianceField = {
   <input
     id="compliance-field"
     name="compliance-field"
-    class="pathable-input pathable-input--error"
+    class="pathable-input"
     type="text"
     aria-describedby="compliance-field-hint compliance-field-error"
     aria-invalid="true"

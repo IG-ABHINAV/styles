@@ -27,7 +27,7 @@ export const InForm = {
 <form class="pathable-form">
   <div class="pathable-form-group">
     <label class="pathable-label" for="textarea-form-name">Name</label>
-    <input id="textarea-form-name" class="pathable-input pathable-input--text" type="text" placeholder="Your name" />
+    <input id="textarea-form-name" class="pathable-input" type="text" placeholder="Your name" />
   </div>
   <div class="pathable-form-group">
     <label class="pathable-label" for="textarea-form-message">Message</label>

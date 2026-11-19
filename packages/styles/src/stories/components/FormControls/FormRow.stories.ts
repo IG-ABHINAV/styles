@@ -217,7 +217,7 @@ export const UnevenErrors = {
         <div class="pathable-form-group">
           <label class="pathable-label" for="form-row-email">Email address</label>
           <input
-            class="pathable-input pathable-input--error"
+            class="pathable-input"
             id="form-row-email"
             name="email"
             type="email"
