@@ -59,8 +59,10 @@ it changes, and a set too large to look at gets approved unseen.
 
 ## How a capture is made
 
+[`packages/styles/scripts/pixel-stories.mjs`](../../packages/styles/scripts/pixel-stories.mjs)
+holds the story entries and the rollout list.
 [`packages/styles/scripts/test-pixels.mjs`](../../packages/styles/scripts/test-pixels.mjs)
-holds the story entries, the rollout list and the threshold. It serves the
+holds the threshold and runs the suite. It serves the
 built styles Storybook and runs the Storybook test-runner on the planned
 stories' files. The test-runner renders each story and runs its play
 function; then the `postVisit` hook in
@@ -181,7 +183,8 @@ own pull request, which changes nothing else. For each component:
    [Which stories get a baseline](#which-stories-get-a-baseline). If the
    component needs an aggregate story, or a chosen story does not render
    deterministically, add or fix the stories in a separate pull request first.
-2. Add an entry to `STORIES` for each chosen story, with its key,
+2. Add an entry to `STORIES` in `packages/styles/scripts/pixel-stories.mjs`
+   for each chosen story, with its key,
    and add the component to `ROLLOUT`. In the pull request, say
    which of the component's canonical stories have no baseline and why the
    chosen ones cover their CSS.

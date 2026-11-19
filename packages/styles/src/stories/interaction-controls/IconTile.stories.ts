@@ -1,5 +1,7 @@
 import { expect, within } from 'storybook/test'
 
+import { guarantee } from '../shared/guarantee'
+
 export default {
   title: 'Interaction Controls/Icon Tile',
   tags: ['autodocs', 'contract-icon-tile'],
@@ -79,6 +81,11 @@ const statuses = [
   },
 ] as const
 
+type PlayContext = {
+  canvasElement: HTMLElement
+  step: Parameters<typeof guarantee>[0]
+}
+
 const getTileIcon = (tile: HTMLElement) => {
   const icon = tile.querySelector<SVGElement>('svg')
 
@@ -86,6 +93,10 @@ const getTileIcon = (tile: HTMLElement) => {
   return icon
 }
 
+/**
+ * The icon box and the tile share a centre on both axes. `toBeCloseTo(…, 2)`
+ * allows a difference below 0.005 px.
+ */
 const expectCentered = async (tile: HTMLElement, icon: SVGElement) => {
   const tileBounds = tile.getBoundingClientRect()
   const iconBounds = icon.getBoundingClientRect()
@@ -123,6 +134,29 @@ const resolveColorToken = (
   return color
 }
 
+/** WCAG relative luminance of a computed `rgb()` or `rgba()` colour. */
+const luminance = (color: string) => {
+  const channels = color
+    .match(/[\d.]+/g)
+    ?.slice(0, 3)
+    .map(Number)
+
+  if (channels?.length !== 3) throw new Error(`Unexpected colour: ${color}`)
+  const [red, green, blue] = channels.map((channel) => {
+    const value = channel / 255
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+}
+
+/** WCAG contrast ratio between two computed colours. */
+const contrastRatio = (first: string, second: string) => {
+  const [lighter, darker] = [luminance(first), luminance(second)].sort(
+    (a, b) => b - a,
+  )
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
 export const SquareAndCircle = {
   render: () => `
     ${sectionHeading('Square (default) vs Circular (--circle)')}
@@ -134,7 +168,7 @@ export const SquareAndCircle = {
       ${iconTile('pathable-icon-tile--circle', 'bell - circle', false, 'circle-icon-tile')}
     </div>
   `,
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement, step }: PlayContext) => {
     const canvas = within(canvasElement)
     const square = canvas.getByTestId('square-icon-tile')
     const circle = canvas.getByTestId('circle-icon-tile')
@@ -161,8 +195,11 @@ export const SquareAndCircle = {
     await expect(view.getComputedStyle(square).display).toBe('flex')
     await expect(view.getComputedStyle(square).alignItems).toBe('center')
     await expect(view.getComputedStyle(square).justifyContent).toBe('center')
-    await expect(view.getComputedStyle(square).borderRadius).not.toBe('50%')
-    await expect(view.getComputedStyle(circle).borderRadius).toBe('50%')
+    await guarantee(step, 'icon-tile/shape', async () => {
+      await expect(view.getComputedStyle(square).borderRadius).not.toBe('50%')
+      await expect(view.getComputedStyle(square).borderRadius).toBe('4px')
+      await expect(view.getComputedStyle(circle).borderRadius).toBe('50%')
+    })
     await expectCentered(square, squareIcon)
     await expectCentered(circle, circleIcon)
   },
@@ -199,7 +236,7 @@ export const SizeVariants = {
       )
       .join('')}
   `,
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement, step }: PlayContext) => {
     const canvas = within(canvasElement)
     const view = canvasElement.ownerDocument.defaultView
 
@@ -222,10 +259,12 @@ export const SizeVariants = {
           await expect(tile).not.toHaveClass('pathable-icon-tile--circle')
           await expect(tileStyle.borderRadius).not.toBe('50%')
         }
-        await expect(tileBounds.width).toBeCloseTo(size.tile, 3)
-        await expect(tileBounds.height).toBeCloseTo(size.tile, 3)
-        await expect(iconBounds.width).toBeCloseTo(size.icon, 3)
-        await expect(iconBounds.height).toBeCloseTo(size.icon, 3)
+        await guarantee(step, 'icon-tile/fixed-size', async () => {
+          await expect(tileBounds.width).toBeCloseTo(size.tile, 3)
+          await expect(tileBounds.height).toBeCloseTo(size.tile, 3)
+          await expect(iconBounds.width).toBeCloseTo(size.icon, 3)
+          await expect(iconBounds.height).toBeCloseTo(size.icon, 3)
+        })
         await expect(tileStyle.flexShrink).toBe('0')
         await expectCentered(tile, icon)
       }
@@ -319,10 +358,11 @@ export const StatusVariants = {
       )
       .join('')}
   `,
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement, step }: PlayContext) => {
     const canvas = within(canvasElement)
     const view = canvasElement.ownerDocument.defaultView
     const background = resolveColorToken(canvasElement, '--pathable-color-bg')
+    const contrasts: { tile: string; ratio: number }[] = []
 
     if (!view) throw new Error('IconTile story window is unavailable')
 
@@ -337,10 +377,16 @@ export const StatusVariants = {
 
         await expect(tile).toHaveClass('pathable-icon-tile')
         if (status.modifier) await expect(tile).toHaveClass(status.modifier)
-        await expect(tileStyle.color).toBe(expectedColor)
-        await expect(iconStyle.color).toBe(expectedColor)
-        await expect(iconStyle.stroke).toBe(expectedColor)
-        await expect(tileStyle.backgroundColor).toBe(background)
+        await guarantee(step, 'icon-tile/status-colour', async () => {
+          await expect(tileStyle.color).toBe(expectedColor)
+          await expect(iconStyle.color).toBe(expectedColor)
+          await expect(iconStyle.stroke).toBe(expectedColor)
+          await expect(tileStyle.backgroundColor).toBe(background)
+        })
+        contrasts.push({
+          tile: `${shape} ${status.name}`,
+          ratio: contrastRatio(iconStyle.stroke, tileStyle.backgroundColor),
+        })
         await expect(bounds.width).toBeCloseTo(44, 3)
         await expect(bounds.height).toBeCloseTo(44, 3)
         await expect(tile).toHaveAttribute('aria-hidden', 'true')
@@ -348,6 +394,18 @@ export const StatusVariants = {
     }
 
     await expect(canvas.queryByRole('img')).not.toBeInTheDocument()
+
+    // WCAG 1.4.11: a meaningful icon needs 3:1 against what is behind it. The
+    // success colour does not reach it, so the page marks this unmet.
+    await guarantee.unmet(step, 'icon-tile/icon-contrast', async () => {
+      for (const { tile, ratio } of contrasts) {
+        if (ratio < 3) {
+          throw new Error(
+            `${tile}: icon contrast ${ratio.toFixed(2)}:1 is below 3:1`,
+          )
+        }
+      }
+    })
   },
 }
 
@@ -455,7 +513,7 @@ export const InlineContentPressure = {
       </div>
     </div>
   `,
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement, step }: PlayContext) => {
     const canvas = within(canvasElement)
     const fixture = canvas.getByTestId('icon-tile-content-pressure')
     const tile = canvas.getByTestId('pressure-icon-tile')
@@ -471,11 +529,13 @@ export const InlineContentPressure = {
       'pathable-icon-tile',
       'pathable-icon-tile--warning',
     )
-    await expect(bounds.width).toBeCloseTo(44, 3)
-    await expect(bounds.height).toBeCloseTo(44, 3)
-    await expect(view.getComputedStyle(tile).flexShrink).toBe('0')
-    await expect(text).toBeVisible()
-    await expect(fixture.scrollWidth).toBeLessThanOrEqual(fixture.clientWidth)
+    await guarantee(step, 'icon-tile/no-shrink', async () => {
+      await expect(bounds.width).toBeCloseTo(44, 3)
+      await expect(bounds.height).toBeCloseTo(44, 3)
+      await expect(view.getComputedStyle(tile).flexShrink).toBe('0')
+      await expect(text).toBeVisible()
+      await expect(fixture.scrollWidth).toBeLessThanOrEqual(fixture.clientWidth)
+    })
   },
 }
 
@@ -520,7 +580,7 @@ export const CustomSizing = {
       </svg>
     </span>
   `,
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement, step }: PlayContext) => {
     const canvas = within(canvasElement)
     const tile = canvas.getByTestId('custom-sized-icon-tile')
     const icon = canvas.getByTestId(
@@ -529,11 +589,13 @@ export const CustomSizing = {
     const tileBounds = tile.getBoundingClientRect()
     const iconBounds = icon.getBoundingClientRect()
 
-    await expect(tileBounds.width).toBeCloseTo(48, 3)
-    await expect(tileBounds.height).toBeCloseTo(48, 3)
-    await expect(iconBounds.width).toBeCloseTo(28, 3)
-    await expect(iconBounds.height).toBeCloseTo(28, 3)
-    await expectCentered(tile, icon)
+    await guarantee(step, 'icon-tile/custom-size', async () => {
+      await expect(tileBounds.width).toBeCloseTo(48, 3)
+      await expect(tileBounds.height).toBeCloseTo(48, 3)
+      await expect(iconBounds.width).toBeCloseTo(28, 3)
+      await expect(iconBounds.height).toBeCloseTo(28, 3)
+      await expectCentered(tile, icon)
+    })
   },
 }
 
@@ -577,7 +639,7 @@ export const AllVariants = {
       </div>
     </div>
   `,
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement, step }: PlayContext) => {
     const canvas = within(canvasElement)
     let count = 0
 
@@ -605,6 +667,13 @@ export const AllVariants = {
 
     await expect(count).toBe(30)
     await expect(canvas.queryByRole('img')).not.toBeInTheDocument()
+
+    await guarantee(step, 'icon-tile/centred-icon', async () => {
+      const tiles = canvas.getAllByTestId(/-variant$/u)
+
+      await expect(tiles).toHaveLength(30)
+      for (const tile of tiles) await expectCentered(tile, getTileIcon(tile))
+    })
   },
 }
 
