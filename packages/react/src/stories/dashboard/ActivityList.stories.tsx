@@ -266,7 +266,7 @@ export const LongContent: Story = {
     await expect(action).toHaveFocus()
     await expect(row.scrollWidth).toBeLessThanOrEqual(row.clientWidth)
     const title = canvas.getByText(values[0])
-    await expect(title.getBoundingClientRect().width).toBeGreaterThan(0)
+    await expect(title.getBoundingClientRect().width).toBeGreaterThan(96)
   },
 }
 

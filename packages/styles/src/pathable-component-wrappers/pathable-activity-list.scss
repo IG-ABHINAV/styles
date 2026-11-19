@@ -214,14 +214,15 @@
   }
 }
 
-// --- Wide screens: give the body a real share of the row ---
+// --- Wide screens: size the body from its content ---
 
 // With a flex basis of 0 the body loses all of the row to long status, date and
-// owner text. A basis of half the row makes it shrink in proportion to its size,
-// so long side text gives up space first and short text barely changes.
+// owner text. Starting from its content size makes it shrink in proportion to
+// that size, so it never collapses, and rows whose content fits do not shrink
+// at all.
 @media (min-width: 641px) {
   .pathable-activity-row__body {
-    flex: 1 1 50%;
+    flex: 1 1 auto;
   }
 }
 
