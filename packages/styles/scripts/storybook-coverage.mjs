@@ -133,6 +133,7 @@ const EXPECTED_COVERAGE = {
     'components-communication-modal--long-content',
   ],
   'Layout composition': [
+    'layout-composition-dark-background--heading-contrast',
     'layout-composition-surface--keyboard-focus-on-surfaces',
   ],
   'Discovery / Resource Finder': [
