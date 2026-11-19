@@ -1,6 +1,10 @@
 # Agent Instructions For PathAble Styles
 
-Use these rules when creating or editing PathAble UI, documentation, prototypes, design tokens, CSS, SCSS, or visual assets.
+These are the rules for contributors and agents changing `@pathableai/styles` itself: its tokens, SCSS, CSS, component classes, utilities, documentation and visual assets. Read [the package intent](https://github.com/PathableAI-org/styles/blob/main/docs/styles/intent.md) for why the package exists and what it prioritises.
+
+Agents consuming the installed package in another repository should follow the shipped guide at [`agent-guidance/pathable-styles/SKILL.md`](agent-guidance/pathable-styles/SKILL.md) instead. This file ships in the package for reference, but its contributor rules (for example about `_uswds-theme.scss`) do not apply to consumers.
+
+When a change here alters the consumer-visible contract (classes, tokens, entry points, consumption routes or the USWDS relationship), update that guide in the same change.
 
 ## Required Source Of Truth
 

@@ -19,8 +19,8 @@ shipped as packages that applications install rather than copy.
   packages, such as Pre-ETS (`pathableai-org/pre-ets`), and future PathAble
   apps.
 - **Coding agents in those applications.** They build UI from the consumer
-  guidance shipped inside `@pathableai/react`, not from this repository's
-  source.
+  guidance shipped inside `@pathableai/react` and `@pathableai/styles`, not
+  from this repository's source.
 - **Design.** The Figma design system is a source of names, values and intent;
   this repository turns it into reviewable code (constitution principle IX).
 - **Contributors and agents working here.** They are routed by
@@ -33,14 +33,17 @@ Each stage consumes the one before it and must not redefine it:
 1. **Styles contract** — `packages/styles`, published as `@pathableai/styles`.
    Tokens, CSS custom properties, `.pathable-*` component and utility classes,
    fonts, icons and small JavaScript helpers. This is the source of truth
-   (principles I and II).
+   (principles I and II). Its purpose, priorities and distribution model are
+   in [`@pathableai/styles` intent](../styles/intent.md).
 2. **React adapter** — `packages/react`, published as `@pathableai/react`.
    Framework-native components that map onto the styles contract, with
    semantic and visual parity (principles IV and V).
 3. **Consumer agent guidance** —
+   [`packages/styles/agent-guidance/pathable-styles/`](../../packages/styles/agent-guidance/pathable-styles/)
+   and
    [`packages/react/agent-guidance/pathable-react/`](../../packages/react/agent-guidance/pathable-react/),
-   shipped in the `@pathableai/react` tarball. Consuming repositories route
-   their UI work to the installed copy, so it is part of the published contract.
+   shipped in each package's tarball. Consuming repositories route their UI
+   work to the installed copy, so it is part of the published contract.
 4. **Consumers** — applications that install `@pathableai/react` (and, where
    they need plain CSS, `@pathableai/styles`) from npm.
 
@@ -100,10 +103,12 @@ adoption in the consumer repository is tracked there, not here.
 
 ## Where the rules live
 
-| Topic                                                       | Owner                                                                                                |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Principles, packaging, release and quality gates            | [Constitution](../../.specify/memory/constitution.md)                                                |
-| Risk tiers, branches, pull requests and merging             | [Git workflow](git-workflow.md)                                                                      |
-| Changesets and version bumps                                | [`.changeset/README.md`](../../.changeset/README.md)                                                 |
-| When a React change must update the consumer agent guidance | [React agent guidance instructions](../../.github/instructions/react-agent-guidance.instructions.md) |
-| Spec Kit templates, presets and the upgrade workflow        | [Spec Kit](spec-kit.md)                                                                              |
+| Topic                                                        | Owner                                                                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| Principles, packaging, release and quality gates             | [Constitution](../../.specify/memory/constitution.md)                                                  |
+| Risk tiers, branches, pull requests and merging              | [Git workflow](git-workflow.md)                                                                        |
+| Changesets and version bumps                                 | [`.changeset/README.md`](../../.changeset/README.md)                                                   |
+| When a React change must update the consumer agent guidance  | [React agent guidance instructions](../../.github/instructions/react-agent-guidance.instructions.md)   |
+| When a styles change must update the consumer agent guidance | [Styles agent guidance instructions](../../.github/instructions/styles-agent-guidance.instructions.md) |
+| Purpose, priorities and distribution of `@pathableai/styles` | [`@pathableai/styles` intent](../styles/intent.md)                                                     |
+| Spec Kit templates, presets and the upgrade workflow         | [Spec Kit](spec-kit.md)                                                                                |

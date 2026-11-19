@@ -5,14 +5,44 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const scriptPath = fileURLToPath(import.meta.url)
 const repoRoot = resolve(dirname(scriptPath), '..')
-const skillRelativePath = 'agent-guidance/pathable-react/SKILL.md'
-const guidanceFiles = [
-  skillRelativePath,
-  'agent-guidance/pathable-react/references/server-and-client.md',
-  'agent-guidance/pathable-react/references/styling-and-theming.md',
-]
 
-export function parseFrontmatter(markdown) {
+// Each published package that ships consumer agent guidance. `shipsAgentsMd`
+// records packages that still publish their contributor-scoped AGENTS.md
+// beside the guide; @pathableai/styles does so for existing consumers (see
+// docs/styles/intent.md, "Known gaps").
+export const guides = {
+  react: {
+    packageDir: 'packages/react',
+    skillName: 'pathable-react',
+    references: ['server-and-client.md', 'styling-and-theming.md'],
+    shipsAgentsMd: false,
+  },
+  styles: {
+    packageDir: 'packages/styles',
+    skillName: 'pathable-styles',
+    references: ['css.md', 'scss-and-uswds.md'],
+    shipsAgentsMd: true,
+  },
+}
+
+function skillPathFor(guide) {
+  return `agent-guidance/${guide.skillName}/SKILL.md`
+}
+
+function guidanceFilesFor(guide) {
+  return [
+    skillPathFor(guide),
+    ...guide.references.map(
+      (reference) =>
+        `agent-guidance/${guide.skillName}/references/${reference}`,
+    ),
+  ]
+}
+
+export function parseFrontmatter(
+  markdown,
+  expectedName = guides.react.skillName,
+) {
   const normalizedMarkdown = markdown.replace(/\r\n?/gu, '\n')
   const match = normalizedMarkdown.match(/^---\n([\s\S]*?)\n---\n/u)
   assert.ok(match, 'SKILL.md must start with YAML frontmatter')
@@ -25,7 +55,7 @@ export function parseFrontmatter(markdown) {
     }),
   )
 
-  assert.equal(fields.name, 'pathable-react', 'Unexpected skill name')
+  assert.equal(fields.name, expectedName, 'Unexpected skill name')
   assert.ok(fields.description, 'Skill description must not be empty')
   assert.deepEqual(
     Object.keys(fields).sort(),
@@ -63,7 +93,9 @@ async function assertReadable(path, message) {
   }
 }
 
-export async function validateAgentGuidance(packageRoot) {
+export async function validateAgentGuidance(packageRoot, guide = guides.react) {
+  const skillRelativePath = skillPathFor(guide)
+  const guidanceFiles = guidanceFilesFor(guide)
   const manifest = JSON.parse(
     await readFile(resolve(packageRoot, 'package.json'), 'utf8'),
   )
@@ -71,10 +103,12 @@ export async function validateAgentGuidance(packageRoot) {
     manifest.files?.includes('agent-guidance'),
     'Package manifest must publish agent-guidance',
   )
-  assert.ok(
-    !manifest.files?.includes('AGENTS.md'),
-    'Consumer guidance must not use the contributor-scoped AGENTS.md name',
-  )
+  if (!guide.shipsAgentsMd) {
+    assert.ok(
+      !manifest.files?.includes('AGENTS.md'),
+      'Consumer guidance must not use the contributor-scoped AGENTS.md name',
+    )
+  }
 
   const readme = await readFile(resolve(packageRoot, 'README.md'), 'utf8')
   assert.ok(
@@ -84,7 +118,7 @@ export async function validateAgentGuidance(packageRoot) {
 
   const skillPath = resolve(packageRoot, skillRelativePath)
   const skill = await readFile(skillPath, 'utf8')
-  parseFrontmatter(skill)
+  parseFrontmatter(skill, guide.skillName)
   const skillStats = await stat(skillPath)
   assert.ok(
     skillStats.size < 8 * 1024,
@@ -114,11 +148,13 @@ export async function validateAgentGuidance(packageRoot) {
 }
 
 async function main() {
-  const packageRoot = resolve(repoRoot, 'packages/react')
-  const result = await validateAgentGuidance(packageRoot)
-  console.log(
-    `[agent-guidance] Validated ${result.files} files; SKILL.md is ${result.skillBytes} bytes`,
-  )
+  for (const guide of Object.values(guides)) {
+    const packageRoot = resolve(repoRoot, guide.packageDir)
+    const result = await validateAgentGuidance(packageRoot, guide)
+    console.log(
+      `[agent-guidance] ${guide.skillName}: validated ${result.files} files; SKILL.md is ${result.skillBytes} bytes`,
+    )
+  }
 }
 
 if (
