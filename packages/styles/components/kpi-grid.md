@@ -166,10 +166,10 @@ Today the value asks for bold, and the package ships only Fredoka Regular (400),
 so browsers draw a synthesised bold; `value-weight` is unmet.
 
 The up-trend contrast guarantee is unmet. In the default theme an up trend's
-text is Intelligent Jade, 12 px and semibold, on the card's white background,
-which measures 2.78 to 1. The brand rules say Intelligent Jade on white fails
-for all text. A down trend measures 4.53 to 1 and a neutral one 7.71 to 1.
-Until this is fixed, do not let the up-trend label be the only place the
+text is Intelligent Jade, 0.75rem (12 px) and semibold, on the card's white
+background, which measures 2.78 to 1. The brand rules say Intelligent Jade on
+white fails for all text. A down trend measures 4.53 to 1 and a neutral one 7.71
+to 1. Until this is fixed, do not let the up-trend label be the only place the
 direction is written: say it in nearby text too. The example above uses a
 neutral trend for this reason.
 
