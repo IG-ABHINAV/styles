@@ -55,6 +55,10 @@ const config = {
         { width: 320, height: 700 },
       ],
       [
+        'dashboard-activity-list--multiple-actions-narrow',
+        { width: 320, height: 700 },
+      ],
+      [
         'components-form-controls-form-row--narrow',
         { width: 320, height: 700 },
       ],

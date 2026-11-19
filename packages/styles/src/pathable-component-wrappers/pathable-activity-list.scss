@@ -179,9 +179,8 @@
   // Buttons keep their own width at every viewport. The button's
   // full-width rule below 30em would otherwise resolve against this
   // content-sized region and squeeze the buttons to equal shares.
-  .pathable-button {
+  :is(.pathable-button, [class*='pathable-button--']) {
     width: auto;
-    margin: 0;
   }
 
   // Actions visible on row hover/focus

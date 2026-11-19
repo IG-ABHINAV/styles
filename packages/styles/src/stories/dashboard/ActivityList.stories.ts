@@ -110,7 +110,7 @@ export const Mobile = {
 }
 
 export const MultipleActionsNarrow = {
-  globals: { viewport: { value: 'mobile1', isRotated: false } },
+  globals: { viewport: { value: 'mobile320', isRotated: false } },
   render: () => `
     <div class="pathable-activity-list" role="list">
       ${activityRow(
@@ -134,6 +134,13 @@ export const MultipleActionsNarrow = {
         '.pathable-activity-row__actions .pathable-button',
       ),
     )
+    if (buttons.length !== 3) throw new Error('Expected three action buttons')
+    const widths = new Set(
+      buttons.map((b) => Math.round(b.getBoundingClientRect().width)),
+    )
+    if (widths.size < 2) {
+      throw new Error('Buttons are forced to equal widths')
+    }
     for (const button of buttons) {
       const rect = button.getBoundingClientRect()
       if (rect.right > rowRect.right + 0.5) {
