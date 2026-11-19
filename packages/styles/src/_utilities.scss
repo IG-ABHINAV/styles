@@ -82,8 +82,9 @@
 // 2.6:1 (#382); a light ring there would inherit into light containers nested
 // in it.
 // The :where() keeps the reset at the utility's own specificity, so a
-// container's own --pathable-surface-focus-ring, or a surface variant on the
-// same element, still wins. Keep the list in step with the selectors that
+// container's own --pathable-surface-focus-ring still wins. A surface variant
+// on the same element no longer does: the utilities load last, so the reset
+// follows it at equal specificity. Keep the list in step with the selectors that
 // include state-focus (pathable-button.scss explains the button modifiers).
 $-surface-focus-ring-controls: '.pathable-button, .pathable-button--primary, .pathable-button--continue, .pathable-button--destructive, .pathable-icon-button, .pathable-input, .pathable-select, .pathable-textarea';
 

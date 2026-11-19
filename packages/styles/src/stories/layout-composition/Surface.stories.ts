@@ -114,9 +114,12 @@ const focusControls = (
   const button = dark
     ? 'pathable-button pathable-button--outline pathable-button--inverse'
     : 'pathable-button'
-  const iconButton = dark
-    ? 'pathable-icon-button--inverse'
-    : 'pathable-icon-button--bare'
+  // A dark background utility on the control follows the component's own
+  // background, so the glyph takes the inverse colour to stay visible on it.
+  const iconButton =
+    dark || controlClass
+      ? 'pathable-icon-button--inverse'
+      : 'pathable-icon-button--bare'
   return `
       <div style="font-size: 0.875rem; font-weight: 600;">${label}</div>
       <button type="button" class="${button} ${controlClass}">Save on ${label}</button>
