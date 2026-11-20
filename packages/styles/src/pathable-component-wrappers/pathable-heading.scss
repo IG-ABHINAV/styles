@@ -18,8 +18,51 @@
 //   6 → body-sm bold  (Nunito, --pathable-font-size-body-sm, weight 700)
 
 .pathable-heading {
-  color: var(--pathable-color-text);
+  color: var(--pathable-heading-color, var(--pathable-color-text));
   margin: 0;
+}
+
+// --pathable-heading-color is the colour of a heading on the container it is
+// in. It is unset, so the heading takes --pathable-color-text, until a dark
+// container sets it (pathable-dark-background does, to white). It inherits, so
+// a container with a light background of its own resets it to `initial` here,
+// and the nearest container wins when they nest: a heading in a card in a dark
+// background is readable on the card. Without the reset, the card's heading
+// would take the dark container's white on the card's white.
+// The :where() keeps the reset at no specificity, so a dark container on the
+// same element, such as pathable-dark-background on a pathable-surface--raised,
+// still sets its own colour. Transparent containers (pathable-surface--base)
+// and dark ones (pathable-surface--inverse) are left out and inherit.
+// Keep this list in step with the components that set a light
+// --pathable-color-surface, --pathable-color-bg or --pathable-color-accent
+// background and can hold a heading.
+:where(
+  .pathable-surface--raised,
+  .pathable-surface--inset,
+  .pathable-surface--interactive,
+  .pathable-surface--brand,
+  .pathable-surface--tone-default,
+  .pathable-surface--tone-subtle,
+  .pathable-surface--tone-primary,
+  .pathable-card,
+  .pathable-card--workflow,
+  .pathable-modal,
+  .pathable-activity-row,
+  .pathable-app-shell__sidebar,
+  .pathable-app-shell__topbar,
+  .pathable-filter-bar,
+  .pathable-filterable-option-list__options,
+  .pathable-filterable-option-list__empty,
+  .pathable-kpi-card,
+  .pathable-optional-form-section,
+  .pathable-page-error,
+  .pathable-record-header,
+  .pathable-resource-card,
+  .pathable-schedule-item,
+  .pathable-toast,
+  .pathable-wayfinder
+) {
+  --pathable-heading-color: initial;
 }
 
 // Level 1: display-lg scale
