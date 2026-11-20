@@ -240,18 +240,6 @@
   }
 }
 
-// --- Wide screens: keep the body readable ---
-
-// The body's flex basis is 0, so long status, date and owner text used to claim
-// the whole row and squeeze the title and context to zero width. Above 640px
-// the body keeps a minimum width, so the side columns give up room first and
-// the title and context truncate with an ellipsis.
-@media (min-width: 641px) {
-  .pathable-activity-row__body {
-    min-width: 6rem;
-  }
-}
-
 // --- Empty state ---
 
 .pathable-activity-list--empty {
