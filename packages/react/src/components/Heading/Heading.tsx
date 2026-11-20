@@ -21,12 +21,23 @@ export interface HeadingProps extends Omit<
   /** Optional visual style override. When set, the CSS class uses this level
    *  while the HTML element uses `level`. Defaults to `level`. */
   visualLevel?: HeadingLevel
+  /** Draw the heading in white, for use on a dark background such as
+   *  `pathable-dark-background`, where the default colour is the container's.
+   *  Defaults to false. */
+  onDark?: boolean
   /** Heading content. */
   children?: ReactNode
 }
 
 const HeadingInner = (
-  { level, visualLevel, children, className = '', ...rest }: HeadingProps,
+  {
+    level,
+    visualLevel,
+    onDark = false,
+    children,
+    className = '',
+    ...rest
+  }: HeadingProps,
   ref: React.ForwardedRef<HTMLHeadingElement>,
 ) => {
   const Tag = `h${level}` as const
@@ -34,6 +45,7 @@ const HeadingInner = (
   const classes = mergeClasses(
     'pathable-heading',
     HEADING_LEVEL_CLASS[visual],
+    onDark ? 'pathable-heading--on-dark' : undefined,
     className,
   )
   return React.createElement(

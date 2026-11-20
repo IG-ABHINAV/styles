@@ -33,6 +33,11 @@ const meta = {
       description:
         'Optional visual style override. When set, the element is h{level} but the CSS class is pathable-heading--level-{visualLevel}. Defaults to level.',
     },
+    onDark: {
+      control: { type: 'boolean' },
+      description:
+        'Draws the heading in white, for a dark background such as pathable-dark-background. Defaults to false.',
+    },
     className: {
       control: { type: 'text' },
       description:
@@ -113,4 +118,15 @@ export const WithCustomClass: Story = {
     className: 'custom-style',
     children: 'Heading with custom class',
   },
+}
+
+export const OnDark: Story = {
+  render: () => (
+    <div className="pathable-dark-background pathable-padding-3">
+      <Heading level={2} onDark>
+        Heading on a dark background
+      </Heading>
+      <p>Body text in the same container.</p>
+    </div>
+  ),
 }

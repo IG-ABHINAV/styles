@@ -9,7 +9,7 @@ export default {
     docs: {
       description: {
         story:
-          '**Interaction Model**: CSS-only\n\n**Consumers must**: Import `@pathableai/styles` CSS. No JavaScript required.\n\n`.pathable-dark-background` is a PathAble Blue container whose text is drawn in the reverse colour.',
+          '**Interaction Model**: CSS-only\n\n**Consumers must**: Import `@pathableai/styles` CSS. No JavaScript required.\n\n`.pathable-dark-background` is a PathAble Blue container whose `p`, `span` and `a` text is drawn in the reverse colour.',
       },
     },
   },
@@ -17,12 +17,18 @@ export default {
 
 const levels = [1, 2, 3, 4, 5, 6]
 
+const headingContrast = (heading: HTMLElement, view: Window) =>
+  contrastRatio(
+    view.getComputedStyle(heading).color,
+    findOpaqueBackground(heading, view),
+  )
+
 export const HeadingContrast = {
   parameters: {
     docs: {
       description: {
         story:
-          'A `.pathable-heading` at each of the six levels inside `.pathable-dark-background`. The container sets `--pathable-heading-color` to the same white as its `p` and `span` text, so a heading takes it at any depth instead of the theme text colour, which is the container colour in the default theme. The same heading in a plain wrapper, a nested stack, and a raised surface, an inset surface, a bento tile and a card nested in the container is checked too: the first two are white on the container, and the light containers reset the heading to the theme text colour on their own background. The play function checks each of them against the background behind it for a contrast of at least 4.5:1.',
+          'A `.pathable-heading` with `.pathable-heading--on-dark` at each of the six levels inside `.pathable-dark-background`, directly and inside a plain wrapper. The modifier draws the heading in white, like the `p` and `span` text in the container; without it the heading takes the theme text colour, which is the container colour in the default theme. A heading in a light card inside the container, without the modifier, keeps the theme text colour on the card. The play function checks each heading against the background behind it for a contrast of at least 4.5:1.',
       },
     },
   },
@@ -31,26 +37,14 @@ export const HeadingContrast = {
       ${levels
         .map(
           (level) =>
-            `<h${level} class="pathable-heading pathable-heading--level-${level}">Heading level ${level}</h${level}>`,
+            `<h${level} class="pathable-heading pathable-heading--level-${level} pathable-heading--on-dark">Heading level ${level}</h${level}>`,
         )
         .join('')}
       <p style="font-family: var(--pathable-font-body)">Body text in the same container.</p>
       <div>
-        <h3 class="pathable-heading pathable-heading--level-3">Heading in a plain wrapper</h3>
-      </div>
-      <div class="pathable-stack">
-        <div class="pathable-stack">
-          <h3 class="pathable-heading pathable-heading--level-3">Heading in a nested stack</h3>
+        <div>
+          <h3 class="pathable-heading pathable-heading--level-3 pathable-heading--on-dark">Heading in plain wrappers</h3>
         </div>
-      </div>
-      <div class="pathable-surface pathable-surface--raised pathable-padding-3">
-        <h3 class="pathable-heading pathable-heading--level-3">Heading in a raised surface</h3>
-      </div>
-      <div class="pathable-surface pathable-surface--inset pathable-stack pathable-padding-3">
-        <h3 class="pathable-heading pathable-heading--level-3">Heading in an inset surface that is also a stack</h3>
-      </div>
-      <div class="pathable-bento-tile">
-        <h3 class="pathable-heading pathable-heading--level-3">Heading in a bento tile</h3>
       </div>
       <div class="pathable-card">
         <div class="pathable-card__container">
@@ -65,34 +59,16 @@ export const HeadingContrast = {
 
     if (!view) throw new Error('Dark background story window is unavailable')
 
-    for (const level of levels) {
-      const heading = canvas.getByRole('heading', {
-        name: `Heading level ${level}`,
-      })
-      const background = findOpaqueBackground(heading, view)
-      const ratio = contrastRatio(
-        view.getComputedStyle(heading).color,
-        background,
-      )
-
-      await expect(ratio).toBeGreaterThanOrEqual(4.5)
-    }
-
-    for (const name of [
-      'Heading in a plain wrapper',
-      'Heading in a nested stack',
-      'Heading in a raised surface',
-      'Heading in an inset surface that is also a stack',
-      'Heading in a bento tile',
+    const names = [
+      ...levels.map((level) => `Heading level ${level}`),
+      'Heading in plain wrappers',
       'Heading in a card',
-    ]) {
-      const nested = canvas.getByRole('heading', { name })
-      const ratio = contrastRatio(
-        view.getComputedStyle(nested).color,
-        findOpaqueBackground(nested, view),
-      )
+    ]
 
-      await expect(ratio).toBeGreaterThanOrEqual(4.5)
+    for (const name of names) {
+      const heading = canvas.getByRole('heading', { name })
+
+      await expect(headingContrast(heading, view)).toBeGreaterThanOrEqual(4.5)
     }
   },
 }

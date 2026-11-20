@@ -35,6 +35,19 @@ describe('Heading', () => {
     expect(container.firstElementChild!.tagName).toBe('H3')
   })
 
+  it('adds pathable-heading--on-dark only when onDark is set', () => {
+    const { container, rerender } = render(<Heading level={2}>Title</Heading>)
+    expect(container.firstElementChild!.className).not.toContain('on-dark')
+    rerender(
+      <Heading level={2} onDark>
+        Title
+      </Heading>,
+    )
+    expect(container.firstElementChild!.className).toBe(
+      'pathable-heading pathable-heading--level-2 pathable-heading--on-dark',
+    )
+  })
+
   // ── US3: visualLevel diverges visual style from level ─────────────
 
   it('uses visualLevel to override the style class while keeping the level element', () => {
