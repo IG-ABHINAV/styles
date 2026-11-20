@@ -13,7 +13,7 @@ guarantees:
     status: unverified
     claim: The validation region is not displayed unless it also has pathable-wizard__validation--visible.
   - id: heading-gap
-    status: unmet
+    status: met
     claim: The heading sits one wizard gap, --pathable-wizard-gap or 16 px by default, below the region before it, like every other region after the first.
   - id: mobile-summary
     status: unverified
@@ -159,9 +159,6 @@ Today each `pathable-button` in the footer keeps its own 0.5rem right margin.
 From 640 px up, buttons appear 16 px apart and the last one stops 0.5rem short
 of the footer's end; below 640 px the save button sits 4 px left of centre,
 and below 480 px the back button touches the button beside it.
-
-Today the heading has no top margin and sits directly against the element
-before it, because its margin reset also removes the wizard gap.
 
 Today the heading, section and mobile summary sizes compile to invalid
 declarations, so the text renders at the inherited or element default size

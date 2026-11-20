@@ -1,3 +1,12 @@
+import { expect } from 'storybook/test'
+
+import { guarantee } from '../shared/guarantee'
+
+type PlayContext = {
+  canvasElement: HTMLElement
+  step: Parameters<typeof guarantee>[0]
+}
+
 export default {
   title: 'Structured Workflow/Wizard',
   tags: ['autodocs'],
@@ -57,6 +66,17 @@ export const Default = {
       </div>
     </div>
   `,
+  play: async ({ canvasElement, step }: PlayContext) => {
+    const view = canvasElement.ownerDocument.defaultView
+    const heading = canvasElement.querySelector('.pathable-wizard__heading')
+
+    if (!view) throw new Error('Wizard story window is unavailable')
+    if (!heading) throw new Error('Wizard story heading is missing')
+
+    await guarantee(step, 'wizard/heading-gap', async () => {
+      await expect(view.getComputedStyle(heading).marginTop).toBe('16px')
+    })
+  },
 }
 
 export const Mobile = {
