@@ -117,7 +117,7 @@ const focusControls = (
   // A dark background utility on the control follows the component's own
   // background, so the glyph takes the inverse colour to stay visible on it.
   const iconButton =
-    dark || controlClass
+    dark || controlClass.includes('pathable-bg-')
       ? 'pathable-icon-button--inverse'
       : 'pathable-icon-button--bare'
   return `
