@@ -49,6 +49,9 @@ export const HeadingContrast = {
       <div class="pathable-surface pathable-surface--inset pathable-stack pathable-padding-3">
         <h3 class="pathable-heading pathable-heading--level-3">Heading in an inset surface that is also a stack</h3>
       </div>
+      <div class="pathable-bento-tile">
+        <h3 class="pathable-heading pathable-heading--level-3">Heading in a bento tile</h3>
+      </div>
       <div class="pathable-card">
         <div class="pathable-card__container">
           <h3 class="pathable-heading pathable-heading--level-3">Heading in a card</h3>
@@ -80,6 +83,7 @@ export const HeadingContrast = {
       'Heading in a nested stack',
       'Heading in a raised surface',
       'Heading in an inset surface that is also a stack',
+      'Heading in a bento tile',
       'Heading in a card',
     ]) {
       const nested = canvas.getByRole('heading', { name })
