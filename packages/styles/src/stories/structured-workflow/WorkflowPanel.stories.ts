@@ -1,3 +1,7 @@
+import { expect, within } from 'storybook/test'
+
+import { guarantee } from '../shared/guarantee'
+
 export default {
   title: 'Structured Workflow/Workflow Panel',
   tags: ['autodocs'],
@@ -131,6 +135,60 @@ export const Offline = {
       </div>
     </div>
   `,
+}
+
+export const OfflineContinue = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The offline modifier leaves the continue button alone. The first panel keeps an enabled continue button, which stays at full opacity and accepts the pointer. The second panel disables it with `disabled`, and `pathable-button` styles that state.',
+      },
+    },
+  },
+  render: () => `
+    <div class="pathable-workflow-panel pathable-workflow-panel--offline">
+      <div class="pathable-workflow-panel__objective">Enabled continue button</div>
+      <div class="pathable-workflow-panel__status"></div>
+      <div class="pathable-workflow-panel__actions">
+        <button type="button" class="pathable-button pathable-button--continue" data-testid="enabled-continue">Continue</button>
+      </div>
+    </div>
+    <div class="pathable-workflow-panel pathable-workflow-panel--offline" style="margin-top: 1rem;">
+      <div class="pathable-workflow-panel__objective">Continue disabled by the application</div>
+      <div class="pathable-workflow-panel__status"></div>
+      <div class="pathable-workflow-panel__actions">
+        <button type="button" class="pathable-button pathable-button--continue" data-testid="disabled-continue" disabled>Continue</button>
+      </div>
+    </div>
+  `,
+  play: async ({
+    canvasElement,
+    step,
+  }: {
+    canvasElement: HTMLElement
+    step: (label: string, play: () => Promise<void>) => Promise<void>
+  }) => {
+    const canvas = within(canvasElement)
+    const enabled = canvas.getByTestId('enabled-continue')
+    const disabled = canvas.getByTestId('disabled-continue')
+    const view = canvasElement.ownerDocument.defaultView
+
+    if (!view) throw new Error('WorkflowPanel story window is unavailable')
+
+    await guarantee(step, 'workflow-panel/offline-continue', async () => {
+      const enabledStyle = view.getComputedStyle(enabled)
+      await expect(enabledStyle.opacity).toBe('1')
+      await expect(enabledStyle.pointerEvents).not.toBe('none')
+      await expect(disabled).toBeDisabled()
+      await expect(view.getComputedStyle(disabled).pointerEvents).not.toBe(
+        'none',
+      )
+      await expect(view.getComputedStyle(disabled).backgroundColor).not.toBe(
+        enabledStyle.backgroundColor,
+      )
+    })
+  },
 }
 
 export const ValidationError = {

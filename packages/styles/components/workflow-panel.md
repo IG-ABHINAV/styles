@@ -32,7 +32,7 @@ guarantees:
     status: unmet
     claim: The current-activity text and the saved, completed and offline status messages each have a contrast of at least 4.5:1 against their background.
   - id: offline-continue
-    status: unmet
+    status: met
     claim: The offline modifier does not change the continue button's opacity or pointer behaviour; a continue button the application disables with disabled or aria-disabled="true" looks disabled through pathable-button's own disabled styles.
   - id: region-sizes
     status: unmet
@@ -177,11 +177,6 @@ with generated content at the start of the status region: "Loading…",
 current-activity text is about 2.2:1 on white, the saved and completed
 messages about 2.8:1 on white, and the offline message about 4.3:1 on its
 amber box.
-
-Today the offline state also dims the continue button to 60% opacity and
-ignores pointer clicks on it, but it stays in the tab order and can still be
-pressed with the keyboard, and no disabled state reaches assistive technology.
-So `offline-continue` is unmet.
 
 Today the region and status message sizes compile to invalid declarations, so
 the text renders at the inherited size and `region-sizes` is unmet.
