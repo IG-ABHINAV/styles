@@ -22,7 +22,6 @@
   gap: var(--pathable-activity-list-gap, var(--pathable-space-2));
   width: 100%;
   box-sizing: border-box;
-  container: pathable-activity-list / inline-size;
 }
 
 // --- Group heading (date or status) ---
@@ -217,9 +216,7 @@
 
 // --- Narrow screen ---
 
-// Rows wrap onto several lines on narrow viewports and inside narrow lists
-// (cards, side panels), where the columns cannot share one line.
-@mixin pathable-activity-row-wrapped {
+@media (max-width: 640px) {
   .pathable-activity-row {
     flex-wrap: wrap;
     gap: var(--pathable-space-2);
@@ -235,25 +232,15 @@
   }
 }
 
-@media (max-width: 640px) {
-  @include pathable-activity-row-wrapped;
-}
-
-@container pathable-activity-list (width < 36rem) {
-  @include pathable-activity-row-wrapped;
-}
-
 // --- Wide screens: keep the body readable ---
 
 // The body's flex basis is 0, so long status, date and owner text used to claim
-// the whole row and squeeze the title and context to zero width. Above 640px,
-// in a list wide enough for one line, the body keeps a minimum width, so the
-// side columns give up room first and the title and context truncate.
+// the whole row and squeeze the title and context to zero width. Above 640px
+// the body keeps a minimum width, so the side columns give up room first and
+// the title and context truncate with an ellipsis.
 @media (min-width: 641px) {
-  @container pathable-activity-list (width >= 36rem) {
-    .pathable-activity-row__body {
-      min-width: 6rem;
-    }
+  .pathable-activity-row__body {
+    min-width: 6rem;
   }
 }
 
