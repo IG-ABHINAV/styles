@@ -15,14 +15,14 @@ const states = ['loading', 'saving', 'saved', 'offline', 'error']
 
 export const States = {
   render: () =>
-    `<div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem; color: var(--pathable-color-text); background: var(--pathable-color-surface);">
+    `<div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem; font-family: var(--pathable-font-body); color: var(--pathable-color-text); background: var(--pathable-color-surface);">
 ${states.map((s) => `      <div role="status"><span class="pathable-save-status pathable-save-status--${s}"></span></div>`).join('\n')}
     </div>`,
 }
 
 export const OnPageBackground = {
   render: () =>
-    `<div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem; color: var(--pathable-color-text); background: var(--pathable-color-bg);">
+    `<div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem; font-family: var(--pathable-font-body); color: var(--pathable-color-text); background: var(--pathable-color-bg);">
 ${states.map((s) => `      <div role="status"><span class="pathable-save-status pathable-save-status--${s}"></span></div>`).join('\n')}
     </div>`,
 }
