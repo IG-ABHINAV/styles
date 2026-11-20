@@ -1,3 +1,4 @@
+import { expect, within } from 'storybook/test'
 import { expectBodyFont } from '../shared/body-font'
 
 export default {
@@ -124,37 +125,26 @@ export const MultipleActionsNarrow = {
     </div>
   `,
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const row = canvasElement.querySelector<HTMLElement>(
-      '.pathable-activity-row',
-    )
-    if (!row) throw new Error('Activity row not found')
+    const canvas = within(canvasElement)
+    // The defect needs a viewport below 480px; a wider one passes vacuously.
+    expect(window.innerWidth).toBeLessThan(480)
+    const row = canvas.getByRole('listitem')
     const rowRect = row.getBoundingClientRect()
-    const buttons = Array.from(
-      row.querySelectorAll<HTMLElement>(
-        '.pathable-activity-row__actions .pathable-button',
-      ),
+    const buttons = canvas.getAllByRole('button')
+    expect(buttons).toHaveLength(3)
+    // Own widths, not equal shares: "View details" is wider than "Edit".
+    const widths = buttons.map((button) =>
+      Math.round(button.getBoundingClientRect().width),
     )
-    if (buttons.length !== 3) throw new Error('Expected three action buttons')
-    const widths = new Set(
-      buttons.map((b) => Math.round(b.getBoundingClientRect().width)),
-    )
-    if (widths.size < 2) {
-      throw new Error('Buttons are forced to equal widths')
-    }
+    expect(new Set(widths).size).toBeGreaterThan(1)
     for (const button of buttons) {
       const rect = button.getBoundingClientRect()
-      if (rect.right > rowRect.right + 0.5) {
-        throw new Error(
-          `${button.textContent} ends at ${rect.right}px, past the row at ${rowRect.right}px`,
-        )
-      }
-      if (rect.height > 50) {
-        throw new Error(`${button.textContent} wraps onto several lines`)
-      }
+      expect(rect.right).toBeLessThanOrEqual(rowRect.right + 0.5)
+      expect(rect.height).toBeLessThan(50)
     }
-    if (document.documentElement.scrollWidth > window.innerWidth) {
-      throw new Error('The page scrolls horizontally')
-    }
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+      window.innerWidth,
+    )
   },
 }
 

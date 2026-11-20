@@ -171,7 +171,6 @@
   display: flex;
   align-items: center;
   gap: var(--pathable-space-1);
-  flex-shrink: 0;
   flex-wrap: wrap;
   min-width: 0;
   max-width: 100%;
@@ -181,6 +180,8 @@
   // content-sized region and squeeze the buttons to equal shares.
   :is(.pathable-button, [class*='pathable-button--']) {
     width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   // Actions visible on row hover/focus
