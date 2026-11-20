@@ -22,7 +22,7 @@ export const HeadingContrast = {
     docs: {
       description: {
         story:
-          'A `.pathable-heading` at each of the six levels inside `.pathable-dark-background`. The container sets `--pathable-heading-color` to the same white as its `p` and `span` text, so a heading takes it at any depth instead of the theme text colour, which is the container colour in the default theme. The same heading in a plain wrapper, a nested stack, and a raised surface, an inset surface and a card nested in the container is checked too: the first two are white on the container, and the light containers reset the heading to the theme text colour on their own background. The play function checks each of them against the background behind it for a contrast of at least 4.5:1.',
+          'A `.pathable-heading` at each of the six levels inside `.pathable-dark-background`. The container sets `--pathable-heading-color` to the same white as its `p` and `span` text, so a heading takes it at any depth instead of the theme text colour, which is the container colour in the default theme. The same heading in a plain wrapper, a nested stack, and a raised surface, an inset surface, a bento tile and a card nested in the container is checked too: the first two are white on the container, and the light containers reset the heading to the theme text colour on their own background. The play function checks each of them against the background behind it for a contrast of at least 4.5:1.',
       },
     },
   },

@@ -33,9 +33,9 @@
 // same element, such as pathable-dark-background on a pathable-surface--raised,
 // still sets its own colour. Transparent containers (pathable-surface--base)
 // and dark ones (pathable-surface--inverse) are left out and inherit.
-// Keep this list in step with the components that set a light
-// --pathable-color-surface, --pathable-color-bg or --pathable-color-accent
-// background and can hold a heading.
+// Keep this list in step with the components that give themselves a light
+// background (a --pathable-color-surface, --pathable-color-bg or
+// --pathable-color-accent token, or a literal white) and can hold a heading.
 :where(
   .pathable-surface--raised,
   .pathable-surface--inset,
