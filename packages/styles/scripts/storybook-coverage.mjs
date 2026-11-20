@@ -146,6 +146,9 @@ const EXPECTED_COVERAGE = {
     'components-communication-modal--open',
     'components-communication-modal--narrow',
     'components-communication-modal--long-content',
+    'components-communication-modal--increased-text',
+    'components-communication-modal--narrow-footer-row',
+    'components-communication-modal--long-footer-label',
   ],
   'Layout composition': [
     'layout-composition-surface--keyboard-focus-on-surfaces',
