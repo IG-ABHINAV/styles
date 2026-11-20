@@ -22,6 +22,7 @@
   gap: var(--pathable-activity-list-gap, var(--pathable-space-2));
   width: 100%;
   box-sizing: border-box;
+  container: pathable-activity-list / inline-size;
 }
 
 // --- Group heading (date or status) ---
@@ -214,23 +215,11 @@
   }
 }
 
-// --- Wide screens: cap the side columns ---
-
-// The body's flex basis is 0, so long status, date and owner text used to claim
-// the whole row and squeeze the title and context to zero width. Each side
-// column now stops at 15% of the row. Text shorter than that keeps its natural
-// width, and a long title or context cannot squeeze the side columns.
-@media (min-width: 641px) {
-  .pathable-activity-row__status-text,
-  .pathable-activity-row__date,
-  .pathable-activity-row__owner {
-    max-width: 15%;
-  }
-}
-
 // --- Narrow screen ---
 
-@media (max-width: 640px) {
+// Rows wrap onto several lines on narrow viewports and inside narrow lists
+// (cards, side panels), where the columns cannot share one line.
+@mixin pathable-activity-row-wrapped {
   .pathable-activity-row {
     flex-wrap: wrap;
     gap: var(--pathable-space-2);
@@ -243,6 +232,28 @@
 
   .pathable-activity-row__actions {
     opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  @include pathable-activity-row-wrapped;
+}
+
+@container pathable-activity-list (width < 36rem) {
+  @include pathable-activity-row-wrapped;
+}
+
+// --- Wide screens: keep the body readable ---
+
+// The body's flex basis is 0, so long status, date and owner text used to claim
+// the whole row and squeeze the title and context to zero width. Above 640px,
+// in a list wide enough for one line, the body keeps a minimum width, so the
+// side columns give up room first and the title and context truncate.
+@media (min-width: 641px) {
+  @container pathable-activity-list (width >= 36rem) {
+    .pathable-activity-row__body {
+      min-width: 6rem;
+    }
   }
 }
 
