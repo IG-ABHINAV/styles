@@ -8,6 +8,8 @@ import { readPages } from '../../packages/styles/scripts/component-pages.mjs'
 import {
   fence,
   render,
+  rewritePageLinks,
+  storybookDocsPath,
   stateTitle,
   storyName,
   storyNames,
@@ -241,6 +243,71 @@ describe('component docs: Storybook', () => {
     assert.ok(!mdx.includes('<PackageNote'))
     assert.ok(!mdx.includes('"R."'))
     assert.ok(!mdx.includes('slug: widget\n---'))
+  })
+})
+
+describe('component docs: Storybook sections', () => {
+  it('puts each kind of page in its own section', () => {
+    const body = '<!-- example: loud -->\n'
+    const titleOf = (kind) =>
+      render(
+        { ...page(body), data: { name: 'Widget', kind } },
+        'storybook',
+        stylesOnly,
+      ).mdx.match(/<Meta title="([^"]*)"/u)[1]
+    assert.equal(titleOf('token'), 'Design tokens/Widget')
+    assert.equal(titleOf('utility'), 'Utilities/Widget')
+    assert.equal(titleOf('static'), 'Component pages/Widget')
+  })
+})
+
+describe('component docs: links between pages in Storybook', () => {
+  const titles = new Map([
+    ['utilities-border', 'Utilities/Border'],
+    ['tokens-color-state-tokens', 'Design tokens/Color state tokens'],
+    ['button', 'Component pages/Button'],
+  ])
+
+  it('turns a title into the docs id Storybook gives it', () => {
+    assert.equal(
+      storybookDocsPath('Utilities/Border'),
+      '/docs/utilities-border--docs',
+    )
+    assert.equal(
+      storybookDocsPath('Design tokens/Color state tokens'),
+      '/docs/design-tokens-color-state-tokens--docs',
+    )
+  })
+
+  it('rewrites relative page links, with or without an anchor', () => {
+    const text =
+      '[a](utilities-border.md), [b](./button.md#variants), [c](tokens-color-state-tokens.md#x-y)'
+    assert.equal(
+      rewritePageLinks(text, titles),
+      '[a](/docs/utilities-border--docs), [b](/docs/component-pages-button--docs#variants), [c](/docs/design-tokens-color-state-tokens--docs#x-y)',
+    )
+  })
+
+  it('leaves other links, unknown pages and fenced code alone', () => {
+    const text = [
+      '[x](https://example.com/a.md) [y](missing.md) [z](#top)',
+      '',
+      '```md',
+      '[a](utilities-border.md)',
+      '```',
+    ].join('\n')
+    assert.equal(rewritePageLinks(text, titles), text)
+  })
+
+  it('rewrites in the Storybook page only, and keeps .md for the styles page', () => {
+    const body =
+      '<!-- example: loud -->\n\nSee [Border](utilities-border.md#widths).\n'
+    const withTitles = { ...stylesOnly, titles }
+    const { mdx } = render(page(body), 'storybook', withTitles)
+    assert.ok(mdx.includes('(/docs/utilities-border--docs#widths)'))
+    assert.ok(!mdx.includes('utilities-border.md'))
+    const markdown = render(page(body), 'styles', withTitles)
+    assert.ok(markdown.includes('(utilities-border.md#widths)'))
   })
 })
 
