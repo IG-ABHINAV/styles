@@ -12,8 +12,9 @@ How the checks run, locally and in CI, is in
 [docs/testing/fixtures.md](../docs/testing/fixtures.md).
 
 A folder that the React fixture manifest maps to a component, such as
-`sr-only`, needs a React example for every fixture in it: adding
-`sr-only/<state>.html` means adding `packages/react/src/components/SrOnly/examples/<state>.tsx` and its
+`button` if it were mapped to `Button` (no folder is mapped yet), needs a React
+example for every fixture in it: adding `button/<state>.html` means adding
+`packages/react/src/components/Button/examples/<state>.tsx` and its
 comparison, or a "not offered in React" entry with a reason. Run
 `pnpm --filter @pathableai/react test:fixtures` as well as the checks below.
 See [React fixture tests](../docs/testing/fixtures.md#react-fixture-tests).
@@ -31,7 +32,7 @@ fixtures/
 
 - A component folder's name is the slug of a page in
   [`components/`](../components/), such as
-  `activity-list` for `activity-list.md`. `harness/` is the only other folder
+  `button` for `button.md`. `harness/` is the only other folder
   allowed.
 - Every component folder is listed in [`folders.json`](folders.json), and
   every listed folder exists. The contract check compares the two both ways,
@@ -111,8 +112,8 @@ to these rules:
 
    The accessible name, "View Intake assessment", begins with the visible text,
    as WCAG 2.5.3 (Label in Name) requires, and tells "View" in one row from
-   "View" in the next. This is the pattern the
-   [SrOnly page](../components/sr-only.md) describes. Do not
+   "View" in the next. This is the pattern
+   the `pathable-sr-only` class exists for. Do not
    use `aria-describedby` for this: a description does not make the name
    unique. Do not use `aria-label` on these buttons.
 
@@ -146,7 +147,7 @@ contract and axe checks need the built stylesheet:
 ### html-validate configuration
 
 [`.htmlvalidate.json`](.htmlvalidate.json) extends both presets, turns no rule
-off, turns one on and narrows one:
+off, turns one on and narrows two:
 
 - `no-missing-references` is not in either preset. It fails an
   `aria-labelledby`, `aria-describedby` or other ID reference that names no
@@ -155,6 +156,11 @@ off, turns one on and narrows one:
   passes while every other redundant role, `<li role="listitem">` included,
   still fails. The reason is WebKit's handling of lists without markers
   (ARIA rule 2). A maintainer chose this in pull request #593.
+- `void-style` is set to `selfclose`, so `<input />` and `<img />` pass and the
+  bare `<input>` fails. Prettier writes void elements self-closed, with no
+  option to omit the slash, and lint-staged and `pnpm lint` enforce Prettier on
+  `fixtures/**/*.html`, so the two tools now agree. A maintainer chose this in
+  pull request #607.
 
 html-validate is pinned to 11.4.0, the newest release whose `engines` covers
 the repository's Node range (`^24.0.0 || >=26.0.0`); from 11.5.0 it needs
