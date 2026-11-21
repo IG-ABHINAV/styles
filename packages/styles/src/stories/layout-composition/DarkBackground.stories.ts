@@ -49,6 +49,10 @@ export const HeadingContrast = {
       <div style="max-width: 8rem">
         <h3 class="pathable-heading pathable-heading--level-3 pathable-heading--on-dark">Disproportionately</h3>
       </div>
+      <div class="pathable-inline" data-row>
+        <h3 class="pathable-heading pathable-heading--level-3 pathable-heading--on-dark">Accommodations</h3>
+        <button class="pathable-button" type="button">Go</button>
+      </div>
       <div class="pathable-card">
         <div class="pathable-card__container">
           <h3 class="pathable-heading pathable-heading--level-3">Card title</h3>
@@ -79,6 +83,17 @@ export const HeadingContrast = {
     const narrowBox = narrow.parentElement
 
     if (!narrowBox) throw new Error('Narrow heading box is unavailable')
+
+    const row = canvasElement.querySelector<HTMLElement>('[data-row]')
+    const rowHeading = row?.querySelector<HTMLElement>('h3')
+
+    if (!row || !rowHeading) throw new Error('Row heading is unavailable')
+
+    // In a row beside a button the heading shrinks and breaks the word, so it
+    // stays inside the dark container.
+    await expect(rowHeading.getBoundingClientRect().right).toBeLessThanOrEqual(
+      row.getBoundingClientRect().right + 1,
+    )
 
     // The long word wraps inside its box instead of running past the dark
     // container, where white text would be on the white page.

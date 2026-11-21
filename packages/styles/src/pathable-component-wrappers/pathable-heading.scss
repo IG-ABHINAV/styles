@@ -33,7 +33,11 @@
 .pathable-heading--on-dark {
   color: color('white');
   // A long word must not run past a dark container: past its edge the white
-  // text is on the page, usually white, and the end of the word is lost.
+  // text is on the page, usually white, and the end of the word is lost. The
+  // zero minimum width lets a heading that is a flex or grid item shrink below
+  // its longest word, so the word breaks inside the box. A heading that must
+  // keep a long word whole should not be an item in a narrow row.
+  min-width: 0;
   overflow-wrap: break-word;
 }
 
