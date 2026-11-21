@@ -32,6 +32,9 @@
 // the heading, and a container rule would turn that heading white on white.
 .pathable-heading--on-dark {
   color: color('white');
+  // A long word must not run past a dark container: past its edge the white
+  // text is on the page, usually white, and the end of the word is lost.
+  overflow-wrap: anywhere;
 }
 
 // Level 1: display-lg scale

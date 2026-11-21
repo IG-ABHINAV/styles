@@ -28,12 +28,12 @@ export const HeadingContrast = {
     docs: {
       description: {
         story:
-          'A `.pathable-heading` with `.pathable-heading--on-dark` at each of the six levels inside `.pathable-dark-background`, directly and inside a plain wrapper. The modifier draws the heading in white, like the `p` and `span` text in the container; without it the heading takes the theme text colour, which is the container colour in the default theme. A heading in a light card inside the container, without the modifier, keeps the theme text colour on the card. The play function checks each heading against the background behind it for a contrast of at least 4.5:1.',
+          'A `.pathable-heading` with `.pathable-heading--on-dark` at each of the six levels inside `.pathable-dark-background`, directly and inside a plain wrapper. The modifier draws the heading in white, like the `p` and `span` text in the container; without it the heading takes the theme text colour, which is the container colour in the default theme. A long word in a narrow box wraps inside it instead of running past the container. A heading in a light card inside the container, without the modifier, keeps the theme text colour on the card. The play function checks each heading against the background behind it for a contrast of at least 4.5:1.',
       },
     },
   },
   render: () => `
-    <div class="pathable-dark-background pathable-padding-3">
+    <div class="pathable-dark-background pathable-padding-3 pathable-stack pathable-stack--gap-md">
       ${levels
         .map(
           (level) =>
@@ -45,6 +45,9 @@ export const HeadingContrast = {
         <div>
           <h3 class="pathable-heading pathable-heading--level-3 pathable-heading--on-dark">Wrapped title</h3>
         </div>
+      </div>
+      <div style="max-width: 8rem">
+        <h3 class="pathable-heading pathable-heading--level-3 pathable-heading--on-dark">Disproportionately</h3>
       </div>
       <div class="pathable-card">
         <div class="pathable-card__container">
@@ -62,6 +65,7 @@ export const HeadingContrast = {
     const names = [
       ...levels.map((level) => `Level ${level}`),
       'Wrapped title',
+      'Disproportionately',
       'Card title',
     ]
 
@@ -70,5 +74,14 @@ export const HeadingContrast = {
 
       await expect(headingContrast(heading, view)).toBeGreaterThanOrEqual(4.5)
     }
+
+    const narrow = canvas.getByRole('heading', { name: 'Disproportionately' })
+    const narrowBox = narrow.parentElement
+
+    if (!narrowBox) throw new Error('Narrow heading box is unavailable')
+
+    // The long word wraps inside its box instead of running past the dark
+    // container, where white text would be on the white page.
+    await expect(narrow.scrollWidth).toBeLessThanOrEqual(narrowBox.clientWidth)
   },
 }
