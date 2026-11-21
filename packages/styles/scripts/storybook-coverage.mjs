@@ -22,7 +22,11 @@ const RESULTS_DIR = resolve('apps/storybook/test-results')
 // ---------------------------------------------------------------------------
 
 const EXPECTED_COVERAGE = {
-  Brand: ['brand-color-usage--default', 'brand-typography--default'],
+  Brand: [
+    'brand-color-usage--default',
+    'brand-typography--default',
+    'brand-typography--text-in-dark-containers',
+  ],
   'Basic components': [
     'components-button--primary',
     'components-button--outline',
@@ -32,10 +36,18 @@ const EXPECTED_COVERAGE = {
     'components-button--accent-warm',
     'components-button--keyboard-focus',
     'components-button--forced-colors',
+    'components-button--full-width',
+    'components-button--responsive-width-override',
+    'components-button--responsive-width-override-below-tablet',
+    'components-button--width-auto-mobile',
     'components-button-group--default',
+    'components-button-group--narrow-container',
+    'components-button-group--wrapping',
     'components-card--default',
     'components-card--workflow-card-action-container',
     'components-link--default',
+    'components-link--theme-override',
+    'components-link--surface-focus-ring',
     'components-list--default',
     'components-table--default',
     'components-tag--default',
@@ -46,6 +58,7 @@ const EXPECTED_COVERAGE = {
     'components-form-controls-checkbox--required',
     'components-form-controls-checkbox--invalid',
     'components-form-controls-checkbox--with-hint-and-error',
+    'components-form-controls-checkbox--legend-colour',
     'components-form-controls-combo-box--default',
     'components-form-controls-form-stack--default',
     'components-form-controls-form-stack--constrained',
@@ -89,6 +102,7 @@ const EXPECTED_COVERAGE = {
     'components-form-controls-select--default',
     'components-form-controls-select--keyboard-focus',
     'components-form-controls-select--forced-colors',
+    'components-form-controls-select--long-value-increased-text',
     'components-form-controls-textarea--default',
     'components-form-controls-textarea--keyboard-focus',
     'components-form-controls-textarea--forced-colors',
@@ -123,6 +137,7 @@ const EXPECTED_COVERAGE = {
   Feedback: [
     'components-feedback-emptystate--no-data',
     'components-feedback-loading--default',
+    'components-feedback-loading--forced-colors',
     'components-feedback-pageerror--full-page',
     'components-feedback-skeleton--card',
     'components-feedback-toast--stacked',
@@ -131,6 +146,9 @@ const EXPECTED_COVERAGE = {
     'components-communication-modal--open',
     'components-communication-modal--narrow',
     'components-communication-modal--long-content',
+    'components-communication-modal--increased-text',
+    'components-communication-modal--narrow-footer-row',
+    'components-communication-modal--long-footer-label',
   ],
   'Layout composition': [
     'layout-composition-dark-background--heading-contrast',
@@ -140,6 +158,7 @@ const EXPECTED_COVERAGE = {
     'discovery-filter-bar--default',
     'discovery-filter-pill--default',
     'discovery-resource-card--grid',
+    'discovery-resource-card--list-layout-mobile',
     'discovery-wayfinder--default',
   ],
   'Structured Workflow / Wizard': [
