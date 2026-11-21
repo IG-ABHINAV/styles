@@ -1,0 +1,255 @@
+import { useId } from 'react'
+import { describe, expect, it } from 'vitest'
+import { expectToRenderFixture } from '../fixtures'
+
+const fixture = `
+<section aria-labelledby="title">
+  <h2 id="title" class="pathable-sr-only extra">Upcoming sessions</h2>
+  <p>Three sessions are booked.</p>
+</section>
+`
+
+function Labelled({ suffix = '' }: { suffix?: string }) {
+  const id = `${useId()}${suffix}`
+  return (
+    <section aria-labelledby={id}>
+      <h2 className="extra pathable-sr-only" id={id}>
+        Upcoming sessions
+      </h2>
+      <p>Three sessions are booked.</p>
+    </section>
+  )
+}
+
+describe('expectToRenderFixture', () => {
+  it('passes when attribute and class order differ', () => {
+    expectToRenderFixture(
+      <p data-b="2" className="b a" data-a="1">
+        Text
+      </p>,
+      '<p data-a="1" data-b="2" class="a b">Text</p>',
+    )
+  })
+
+  it('passes when generated IDs differ but references resolve to the same element', () => {
+    expectToRenderFixture(<Labelled suffix="-generated" />, fixture)
+  })
+
+  it('fails when the component adds a wrapper element', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <div>
+          <p>Text</p>
+        </div>,
+        '<p>Text</p>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('fails when a class moves to another element', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <p className="pathable-sr-only">
+          <span>Text</span>
+        </p>,
+        '<p><span class="pathable-sr-only">Text</span></p>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('fails when an ID reference does not resolve', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <section aria-labelledby="missing">
+          <h2 id="title">Upcoming sessions</h2>
+        </section>,
+        '<section aria-labelledby="title"><h2 id="title">Upcoming sessions</h2></section>',
+      ),
+    ).toThrow(
+      /aria-labelledby="missing"> refers to an id that is not in the markup/u,
+    )
+  })
+
+  it('fails when a reference points at a different element', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <section aria-labelledby="b">
+          <h2 id="a">Upcoming sessions</h2>
+          <p id="b">Three sessions are booked.</p>
+        </section>,
+        '<section aria-labelledby="a"><h2 id="a">Upcoming sessions</h2><p id="b">Three sessions are booked.</p></section>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('fails when the text differs', () => {
+    expect(() =>
+      expectToRenderFixture(<p>Other words</p>, '<p>Text</p>'),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('fails when a space between inline words is missing', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <a href="/edit">
+          Edit
+          <span className="pathable-sr-only">Jordan Lee&apos;s profile</span>
+        </a>,
+        `<a href="/edit">Edit<span class="pathable-sr-only"> Jordan Lee's profile</span></a>`,
+      ),
+    ).toThrow(/rendered text/u)
+  })
+
+  it('compares style attributes rather than ignoring them', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <p style={{ color: 'red' }}>Text</p>,
+        '<p>Text</p>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('fails when an svg differs', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <svg className="pathable-icon" aria-hidden="true">
+          <use href="#check" />
+        </svg>,
+        '<svg class="pathable-icon" aria-hidden="true"><use href="#close"></use></svg>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('passes when an svg matches', () => {
+    expectToRenderFixture(
+      <svg className="pathable-icon" aria-hidden="true">
+        <use href="#check" />
+      </svg>,
+      '<svg aria-hidden="true" class="pathable-icon"><use href="#check"></use></svg>',
+    )
+  })
+
+  it('passes when the fixture wraps text across lines', () => {
+    expectToRenderFixture(
+      <p>Three sessions are booked for this week.</p>,
+      '<p>\n  Three sessions are booked\n  for this week.\n</p>',
+    )
+  })
+
+  it('fails when a fragment link points at a different element', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <>
+          <a href="#main-content">Skip</a>
+          <main id="main">Content</main>
+        </>,
+        '<a href="#main-content">Skip</a><main id="main-content">Content</main>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('compares a fragment link to an ID outside the markup literally', () => {
+    expectToRenderFixture(
+      <a href="#main-content">Skip to main content</a>,
+      '<a href="#main-content">Skip to main content</a>',
+    )
+  })
+
+  it('fails when an aria-flowto reference does not resolve', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <p aria-flowto="next">Text</p>,
+        '<p aria-flowto="next">Text</p><p id="next">More</p>',
+      ),
+    ).toThrow(/refers to an id that is not in the markup/u)
+  })
+
+  it('ignores an empty id', () => {
+    expectToRenderFixture(<p id="">Text</p>, '<p>Text</p>')
+  })
+
+  it('keeps a non-breaking space distinct from a space', () => {
+    expect(() => expectToRenderFixture(<p>a b</p>, '<p>a&nbsp;b</p>')).toThrow(
+      /rendered markup/u,
+    )
+  })
+
+  it('keeps whitespace inside pre', () => {
+    expect(() =>
+      expectToRenderFixture(<pre>a b</pre>, '<pre>a\nb</pre>'),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('fails when a space before an inline button is missing', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <p>
+          Read<button type="button">more</button>
+        </p>,
+        '<p>Read <button type="button">more</button></p>',
+      ),
+    ).toThrow(/rendered text/u)
+  })
+
+  it('fails when a space beside an inline icon is missing', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <p>
+          Read<svg aria-hidden="true"></svg>more
+        </p>,
+        '<p>Read <svg aria-hidden="true"></svg> more</p>',
+      ),
+    ).toThrow(/rendered text/u)
+  })
+
+  it('fails when a dangling fragment link matches a renumbered id', () => {
+    // Both sides renumber their one id to id-1. The fixture's link resolves
+    // to it; the component's literal "#id-1" resolves to nothing.
+    expect(() =>
+      expectToRenderFixture(
+        <>
+          <a href="#id-1">Details</a>
+          <p id="details">More</p>
+        </>,
+        '<a href="#details">Details</a><p id="details">More</p>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('compares whitespace inside script and style exactly', () => {
+    expect(() =>
+      expectToRenderFixture(
+        <script>{'const label = "a  b"'}</script>,
+        '<script>const label = "a b"</script>',
+      ),
+    ).toThrow(/rendered markup/u)
+    expect(() =>
+      expectToRenderFixture(
+        <style>{'.a::before { content: "x  y"; }'}</style>,
+        '<style>.a::before { content: "x y"; }</style>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('compares the text at either end of pre and textarea exactly', () => {
+    expect(() => expectToRenderFixture(<pre>a </pre>, '<pre>a</pre>')).toThrow(
+      /rendered markup/u,
+    )
+    expect(() =>
+      expectToRenderFixture(
+        <textarea defaultValue="a " />,
+        '<textarea>a</textarea>',
+      ),
+    ).toThrow(/rendered markup/u)
+  })
+
+  it('keeps a non-breaking space at the end of ordinary text', () => {
+    expect(() => expectToRenderFixture(<p>a</p>, '<p>a&nbsp;</p>')).toThrow(
+      /rendered markup/u,
+    )
+  })
+
+  it('still ignores HTML whitespace at either end of ordinary text', () => {
+    expectToRenderFixture(<p>a</p>, '<p>\n  a\n</p>')
+  })
+})

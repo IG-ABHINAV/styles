@@ -3,14 +3,20 @@
 Canonical HTML for each static `@pathableai/styles` component, one file per
 state. A fixture is the reference markup a consuming application copies, so it
 shows classes, structure and ARIA exactly as a well-built client application
-should write them. The fixtures are checked on their own here. The planned
-next steps are listed in
-[docs/testing/fixtures.md](../docs/testing/fixtures.md): React fixture tests
-that hold the `@pathableai/react` output to these fixtures, and component docs
-generated from them.
+should write them. The fixtures are checked on their own here, and
+`@pathableai/react` components are held to them by React fixture tests. The
+planned next step, component docs generated from the fixtures, is listed in
+[docs/testing/fixtures.md](../docs/testing/fixtures.md).
 
 How the checks run, locally and in CI, is in
 [docs/testing/fixtures.md](../docs/testing/fixtures.md).
+
+A folder that the React fixture manifest maps to a component, such as
+`sr-only`, needs a React example for every fixture in it: adding
+`sr-only/<state>.html` means adding `packages/react/src/components/SrOnly/examples/<state>.tsx` and its
+comparison, or a "not offered in React" entry with a reason. Run
+`pnpm --filter @pathableai/react test:fixtures` as well as the checks below.
+See [React fixture tests](../docs/testing/fixtures.md#react-fixture-tests).
 
 ## Layout
 
