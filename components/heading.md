@@ -153,7 +153,9 @@ between the container and the heading.
   levels; the level modifier changes only the look, never what is announced.
 - Keeping headings short. A statement longer than one sentence belongs in body
   text, such as `pathable-text`.
-- Spacing above and below the heading, and wrapping in narrow containers.
+- Spacing above and below the heading, and wrapping in narrow containers. The
+  one exception is `pathable-heading--on-dark`, which breaks a word that is
+  wider than its box, so the end of it is not lost past a dark container.
 - The background: the contrast figure holds on the surface colour, not on a
   coloured or dark panel. Inside `pathable-section--dark`, the section colours
   every `<h1>` to `<h6>` `#4899e8`, so the heading is drawn in that colour, not
