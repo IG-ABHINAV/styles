@@ -154,8 +154,9 @@ between the container and the heading.
 - Keeping headings short. A statement longer than one sentence belongs in body
   text, such as `pathable-text`.
 - Spacing above and below the heading, and wrapping in narrow containers. The
-  one exception is `pathable-heading--on-dark`, which breaks a word that is
-  wider than its box, so the end of it is not lost past a dark container.
+  heading does not break a long word, with or without `pathable-heading--on-dark`,
+  so a word wider than its box can run past it, and past a dark container, where
+  the white text is on the page.
 - The background: the contrast figure holds on the surface colour, not on a
   coloured or dark panel. Inside `pathable-section--dark`, the section colours
   every `<h1>` to `<h6>` `#4899e8`, so the heading is drawn in that colour, not
