@@ -1,7 +1,10 @@
 /**
- * Ties each component page (packages/styles/components/*.md) to the styles
+ * Ties each component page (components/*.md, the source pages) to the styles
  * package it describes. The page is written by hand and is the specification;
- * this check fails when the page and the package disagree.
+ * this check fails when the page and the package disagree. A page may take
+ * its examples from the HTML fixtures (fixtures/<slug>/) through placeholders
+ * (components/README.md); the checks below then read the page as the styles
+ * package ships it, with the fixtures in place.
  *
  * A page states guarantees: expected behaviour, each `met` (the default),
  * `unmet` (not implemented yet) or `unverified` (read from the source and
@@ -15,9 +18,15 @@
  *
  * Stage 1, `pnpm --filter @pathableai/styles check:component-pages`, needs the
  * built stylesheet (dist/styles.css). It proves:
+ *   - every placeholder resolves: each fixture it names exists, package
+ *     blocks are well formed and, for a component the React package covers,
+ *     each state has a React example module;
+ *   - a page with placeholders shows every fixture in its folder, and a page
+ *     whose component the React package covers has placeholders;
  *   - the front matter has the known fields and the body the required sections;
  *   - the class, every non-default variant's modifier class, every class in
- *     the markup example and every class named in prose is a class selector
+ *     the markup examples (fixtures included) and every class named in prose
+ *     is a class selector
  *     in the compiled CSS; a default variant has no modifier class; every
  *     modifier the CSS has for the class is a variant on the page;
  *   - the body's summary paragraph and Variants table agree with the front
@@ -58,7 +67,18 @@ import { pathToFileURL } from 'node:url'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
 
-import { readPages } from './component-pages.mjs'
+import { render, shownStates } from '../../../scripts/component-docs/render.mjs'
+import {
+  codeBlocks,
+  ComponentDocsError,
+  exampleSegments,
+  segment,
+  visibleMarkdown,
+} from '../../../scripts/component-docs/segments.mjs'
+import { readCoverage } from '../../../scripts/component-docs/sources.mjs'
+import { pageSources } from '../../../scripts/component-docs/write.mjs'
+
+import { parsePage, readPages } from './component-pages.mjs'
 
 const packageRoot = resolve(import.meta.dirname, '..')
 const repoRoot = resolve(packageRoot, '../..')
@@ -168,12 +188,11 @@ const tokensOf = (css, className) =>
 // Stage 1: the page against the compiled CSS and the pixel entries
 // ---------------------------------------------------------------------------
 
-const fencedBlocks = (body, language) =>
-  [
-    ...body.matchAll(
-      new RegExp(`^\`\`\`${language}\\n([\\s\\S]*?)^\`\`\`$`, 'gmu'),
-    ),
-  ].map((match) => match[1])
+/**
+ * The code blocks in `language`, as the Markdown parser reads them: a fence of
+ * any length, as the generator writes one around code that holds backticks.
+ */
+const fencedBlocks = (body, language) => codeBlocks(body, language)
 
 const flat = (text) => text.replace(/\s+/gu, ' ').trim()
 
@@ -328,12 +347,33 @@ function checkVariants(page, css, errors) {
   }
 }
 
-function checkNames(page, css, errors) {
-  const html = fencedBlocks(page.body, 'html')
-  if (html.length !== 1)
-    errors.push(`expected one html example; found ${html.length}`)
+/**
+ * The `<!-- example: … -->` placeholders the styles page shows, read by the
+ * generator's own parser, so a placeholder in a code block does not count.
+ */
+const examplePlaceholders = (markdown) =>
+  exampleSegments(segment(markdown), 'styles').filter(
+    (item) => item.type === 'example',
+  ).length
 
-  for (const markup of html) {
+function checkNames(page, css, errors) {
+  // A page has one minimal example: a literal html block, or a placeholder
+  // that the build replaces with a fixture. `<!-- examples -->` lists the
+  // states and is not the minimal example.
+  // Count literal blocks only where the styles page shows them, so an HTML
+  // snippet in a React-only block does not count.
+  const source = page.source ?? page.markdown
+  const examples =
+    fencedBlocks(
+      visibleMarkdown(segment(parsePage(source).body), 'styles'),
+      'html',
+    ).length + examplePlaceholders(source)
+  if (examples !== 1)
+    errors.push(
+      `expected one html example (a literal html block or an "<!-- example: … -->" placeholder); found ${examples}`,
+    )
+
+  for (const markup of fencedBlocks(page.body, 'html')) {
     for (const [, classes] of markup.matchAll(/class="([^"]*)"/gu)) {
       for (const className of classes.split(/\s+/u).filter(Boolean)) {
         if (!css.classes.has(className)) {
@@ -373,6 +413,47 @@ const pixelCitations = (page, id, pixels) =>
       entry.enforced &&
       entry.missing.length === 0,
   )
+
+/**
+ * Renders a source page as the styles package ships it and checks its
+ * placeholders. Returns { page, errors }: `page` is the rendered page, ready
+ * for checkPage (with the source kept as `page.source`), or undefined when
+ * the placeholders do not resolve.
+ */
+export function renderForCheck(page, sources) {
+  const errors = []
+  let markdown
+  try {
+    markdown = render(page, 'styles', sources)
+    if (sources.examples) render(page, 'react', sources)
+    // The Storybook page shows both packages' blocks, so it resolves
+    // placeholders neither Markdown page does, and turns each state into a
+    // story export name.
+    if (sources.fixtures.size > 0) render(page, 'storybook', sources)
+  } catch (error) {
+    if (!(error instanceof ComponentDocsError)) throw error
+    return { errors: error.problems }
+  }
+  const converted = markdown !== page.markdown
+  // A page the React fixture manifest lists but that has no placeholders
+  // fails the React render above.
+  if (converted) {
+    // Coverage is by state name, so two states that share markup are each
+    // checked for their own placeholder.
+    const shown = shownStates(page, 'styles', sources)
+    for (const state of sources.fixtures.keys()) {
+      if (!shown.has(state)) {
+        errors.push(
+          `fixtures/${page.slug}/${state}.html is not shown: add "<!-- examples -->" (or "<!-- example: ${state} -->")`,
+        )
+      }
+    }
+  }
+  return {
+    page: { ...page, ...parsePage(markdown), markdown, source: page.markdown },
+    errors,
+  }
+}
 
 /** Every stage 1 disagreement between one page and the package, as messages. */
 export function checkPage(page, facts) {
@@ -714,11 +795,20 @@ async function main() {
     summary = `stage 2 (what ran): ${pages.length} page(s) checked against ${records.length} story records`
   } else {
     const css = await readCompiledCss()
+    const coverage = await readCoverage()
     for (const page of pages) {
+      const rendered = await pageSources(page, coverage).then(
+        (sources) => renderForCheck(page, sources),
+        (error) => {
+          if (!(error instanceof ComponentDocsError)) throw error
+          return { errors: error.problems }
+        },
+      )
       errors.push(
-        ...checkPage(page, { css, pixels }).map(
-          (error) => `${page.file}: ${error}`,
-        ),
+        ...[
+          ...rendered.errors,
+          ...(rendered.page ? checkPage(rendered.page, { css, pixels }) : []),
+        ].map((error) => `${page.file}: ${error}`),
       )
     }
     if (!only) errors.push(...checkPixelCitations(pages, pixels))

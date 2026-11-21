@@ -7,7 +7,7 @@
  *   - a folder on disk is missing from fixtures/folders.json, or a folder that
  *     file lists is missing from disk (always checked, whatever folders are
  *     named, so deleting a folder has to edit the list visibly);
- *   - a folder's name is not the slug of a page in packages/styles/components/;
+ *   - a folder's name is not the slug of a page in components/;
  *   - a folder holds no fixture;
  *   - a fixture's file name is not a kebab-case state name such as
  *     `no-actions.html`, or a component folder holds anything other than such
@@ -117,7 +117,7 @@ export function readFolderList(path = folderListPath) {
 export function checkFolder(folder, fixtures, page, css) {
   if (!page) {
     return [
-      `${folder}/: no component page packages/styles/components/${folder}.md; a fixture folder must be named after a page slug`,
+      `${folder}/: no component page components/${folder}.md; a fixture folder must be named after a page slug`,
     ]
   }
   const errors = []

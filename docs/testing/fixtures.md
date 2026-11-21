@@ -13,13 +13,13 @@ fixtures are checked.
 
 Fixtures exist for ActivityList and SrOnly so far. `@pathableai/react`
 components are held to the fixtures by
-[React fixture tests](#react-fixture-tests). The planned next step, in its own
-pull request, is to generate component docs from the fixtures.
+[React fixture tests](#react-fixture-tests), and converted component pages
+take their examples from them ([`components/README.md`](../../components/README.md)).
 
 Where a fixture and today's markup differ, the markup moves to the fixture.
-The ActivityList fixtures use `<ul role="list">` and `<li>`, while the
-component page, its styles stories and the React `ActivityList` still use
-`<div role="list">`. A styles list reset for ActivityList and a React
+The ActivityList fixtures and the ActivityList component page's examples use
+`<ul role="list">` and `<li>`, while its styles stories and the React
+`ActivityList` still use `<div role="list">`. A styles list reset for ActivityList and a React
 `ActivityList` that renders `ul role="list"`/`li` are planned. Until then the
 React fixture tests leave ActivityList unmapped, and report it in every run.
 
@@ -45,7 +45,7 @@ Each check takes a list of component folders and defaults to every folder.
 - **Contract** fails when `fixtures/folders.json` and the component folders
   on disk disagree in either direction (so deleting a folder fails unless the
   list is edited in the same change), when a folder is not named after a page
-  in `packages/styles/components/`, when a fixture's file name is not a
+  in `components/`, when a fixture's file name is not a
   kebab-case state name (`^[a-z][a-z0-9]*(-[a-z0-9]+)*\.html$`), when a
   `pathable-*` class in a fixture is not a class selector in
   `@pathableai/styles/dist/styles.css`, or when a non-default variant in the
@@ -161,7 +161,7 @@ workflow's `pull_request.paths` misses one.
 with `affected.mjs`'s listing (working tree against the merge base, renames
 as a delete and an add), and prints the union of the folders `changed.mjs`'s
 `selectFolders` picks from them, the folders `affected.mjs` selects, and
-every folder whose page `packages/styles/components/<slug>.md` changed (the
+every folder whose page `components/<slug>.md` changed (the
 contract check reads the page's slug and variants). A change to
 `packages/styles/scripts/check-component-pages.mjs` or `component-pages.mjs`,
 which the selection and the contract check read selectors, CSS and pages
@@ -175,7 +175,7 @@ every folder. In GitHub Actions it also writes the `folders` and
 
 [`.github/workflows/fixtures.yml`](../../.github/workflows/fixtures.yml) runs
 on a pull request that changes any input of the selection (`fixtures/**`,
-`packages/styles/components/*.md`, the component-page scripts
+`components/*.md`, the component-page scripts
 `check-component-pages.mjs` and `component-pages.mjs` it reads selectors and
 pages with, `packages/styles/src/**/*.scss` or `*.sass`,
 `packages/styles/package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml` or
@@ -295,6 +295,21 @@ The coverage test (`src/test/__tests__/fixture-coverage.test.ts`) fails when:
 It reports fixture folders the manifest does not map yet, and exported React
 components that no folder maps to yet, as a notice, without failing. Only
 `sr-only` is mapped so far.
+
+The manifest and the example modules also feed the component docs
+([`components/README.md`](../../components/README.md)). Mapping a folder gives
+the component a React page in the shipped agent guidance, so before you map
+one:
+
+- convert the folder's component page in `components/` to take its examples
+  from the fixtures, or `check:component-pages` and the React page build fail;
+- write each example as consumer code: it ships verbatim as guidance, except
+  that a relative import of the component becomes `@pathableai/react`. An
+  example may import only `react`, `@pathableai/react`, or names that
+  `src/index.ts` exports, by relative path; any other import fails the build;
+- run `node scripts/component-docs/cli.mjs react` and commit the pages it
+  writes in `packages/react/agent-guidance/pathable-react/references/components/`.
+  `pnpm check:agent-guidance` fails when they are out of date.
 
 ### Running them
 

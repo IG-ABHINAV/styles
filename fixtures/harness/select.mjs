@@ -44,20 +44,18 @@ export const SHARED_SCRIPTS = [
  */
 export const INPUT_GLOBS = [
   'fixtures/**',
-  'packages/styles/components/*.md',
+  'components/*.md',
   ...SHARED_SCRIPTS,
   ...STYLESHEET_GLOBS,
   ...DEPENDENCY_GLOBS,
 ]
 
 /**
- * The folders whose component page (packages/styles/components/<slug>.md)
+ * The folders whose component page (components/<slug>.md)
  * changed: the contract check reads the page's slug and variants.
  */
 export function pagesChanged(paths, folders) {
-  return folders.filter((folder) =>
-    paths.includes(`packages/styles/components/${folder}.md`),
-  )
+  return folders.filter((folder) => paths.includes(`components/${folder}.md`))
 }
 
 /**
@@ -97,10 +95,7 @@ export function combine(changed, css, pages = [], scripts = {}) {
   for (const folder of changed)
     add(folder, 'Fixture files changed under `fixtures/`.')
   for (const folder of pages)
-    add(
-      folder,
-      `Component page \`packages/styles/components/${folder}.md\` changed.`,
-    )
+    add(folder, `Component page \`components/${folder}.md\` changed.`)
   for (const [folder, { reasons }] of Object.entries(css.folders)) {
     for (const reason of reasons) add(folder, describe(reason))
   }

@@ -2,7 +2,7 @@
 name: SrOnly
 slug: sr-only
 kind: static
-summary: A utility class that hides an element visually so it is not seen but is still read by screen readers.
+summary: Hides an element visually so it is not seen but is still read by screen readers.
 styles-class: pathable-sr-only
 variants: []
 guarantees:
@@ -22,38 +22,80 @@ guarantees:
 
 # SrOnly
 
-A utility class that hides an element visually so it is not seen but is
-still read by screen readers. Put the class on a `<span>` of text that adds
-context sighted users get from the layout.
+Hides an element visually so it is not seen but is still read by screen
+readers.
+
+Wrap text that adds context sighted users get from the layout in `<SrOnly>`,
+which renders a `<span>` with the `pathable-sr-only` class.
 
 ## When to use
 
 - A control whose visible text is ambiguous out of context, such as several
   "Edit" links in a table: add the row's name in hidden text.
 - Status text for assistive technology beside a visual indicator that is
-  hidden from it, such as a `pathable-save-status`.
+  hidden from it, such as a save status.
 - A heading for a region whose purpose is obvious visually.
 
 Use something else when:
 
 - the content should be hidden from everyone: use the `hidden` attribute;
-- the element can receive focus, such as a skip link: use `pathable-skipnav`,
-  which is shown when focused;
+- the element can receive focus, such as a skip link: use `Skipnav`, which is
+  shown when focused;
 - sighted users would also benefit from the text: show it, for example with
-  `pathable-label` or `pathable-hint`.
+  `Label` or `Hint`.
 
 ## Example
 
-Load the stylesheet once in the application; no JavaScript is needed:
+Import `SrOnly` from `@pathableai/react`. The package entry point loads the
+styles it needs; no JavaScript runs in the browser.
 
-```css
-@import '@pathableai/styles';
+```tsx
+import { SrOnly } from '@pathableai/react'
+
+export default (
+  <a href="/participants/42/edit">
+    Edit<SrOnly> Jordan Lee&apos;s profile</SrOnly>
+  </a>
+)
 ```
 
-```html
-<a href="/participants/42/edit">
-  Edit<span class="pathable-sr-only"> Jordan Lee's profile</span>
-</a>
+## States
+
+### Heading
+
+A heading for a region whose purpose is clear visually, hidden from sight but used to name the region and found by screen reader heading navigation.
+
+```tsx
+import { useId } from 'react'
+import { SrOnly } from '@pathableai/react'
+
+function UpcomingSessions() {
+  const titleId = useId()
+  return (
+    <section aria-labelledby={titleId}>
+      <SrOnly as="h2" id={titleId}>
+        Upcoming sessions
+      </SrOnly>
+      <p>Three sessions are booked for this week.</p>
+    </section>
+  )
+}
+
+export default <UpcomingSessions />
+```
+
+### Inline
+
+Hidden text that finishes a visible link label, so each "Edit" link names the profile it opens. The hidden text starts with a space.
+
+```tsx
+import { SrOnly } from '@pathableai/react'
+
+export default (
+  <a href="/participants/42/edit">
+    Edit<SrOnly> Jordan Lee&apos;s profile</SrOnly>
+  </a>
+)
 ```
 
 ## Variants
@@ -74,7 +116,11 @@ None.
   container.
 - Start hidden text with a space, as in the example, when it continues a
   visible phrase, so screen readers do not run the words together.
-- The element has no element classes.
+
+`SrOnly` renders a `<span>` by default. Use `as` to render a `<p>` or a
+heading from `h2` to `h6`, as in the heading state. It accepts no `tabIndex`,
+because the element must not receive focus. Do not add `pathable-sr-only` to
+elements by hand.
 
 ## Guarantees
 
@@ -92,4 +138,4 @@ wrapping inside the 1px box, so a screen reader reads it as one run.
 - Accessibility. Hidden text must agree with what the page shows, and must not
   hide information sighted users need.
 - The wording, in the user's language, and keeping it short.
-- Not using the class on focusable elements.
+- Keeping focusable elements out of hidden text.
