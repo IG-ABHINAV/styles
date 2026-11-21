@@ -132,7 +132,7 @@ export const OnDark: Story = {
   render: () => (
     <div className="pathable-dark-background pathable-padding-3">
       <Heading level={2} onDark>
-        Heading on a dark background
+        Dark title
       </Heading>
       <p className="pathable-text pathable-text--body">
         Body text in the same container.

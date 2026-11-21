@@ -37,18 +37,18 @@ export const HeadingContrast = {
       ${levels
         .map(
           (level) =>
-            `<h${level} class="pathable-heading pathable-heading--level-${level} pathable-heading--on-dark">Heading level ${level}</h${level}>`,
+            `<h${level} class="pathable-heading pathable-heading--level-${level} pathable-heading--on-dark">Level ${level}</h${level}>`,
         )
         .join('')}
       <p style="font-family: var(--pathable-font-body)">Body text in the same container.</p>
       <div>
         <div>
-          <h3 class="pathable-heading pathable-heading--level-3 pathable-heading--on-dark">Heading in plain wrappers</h3>
+          <h3 class="pathable-heading pathable-heading--level-3 pathable-heading--on-dark">Wrapped title</h3>
         </div>
       </div>
       <div class="pathable-card">
         <div class="pathable-card__container">
-          <h3 class="pathable-heading pathable-heading--level-3">Heading in a card</h3>
+          <h3 class="pathable-heading pathable-heading--level-3">Card title</h3>
         </div>
       </div>
     </div>
@@ -60,9 +60,9 @@ export const HeadingContrast = {
     if (!view) throw new Error('Dark background story window is unavailable')
 
     const names = [
-      ...levels.map((level) => `Heading level ${level}`),
-      'Heading in plain wrappers',
-      'Heading in a card',
+      ...levels.map((level) => `Level ${level}`),
+      'Wrapped title',
+      'Card title',
     ]
 
     for (const name of names) {
