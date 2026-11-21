@@ -12,8 +12,7 @@ How to write a fixture, and the ARIA rules fixtures are held to, are in
 fixtures are checked.
 
 Fixtures exist for ActivityList so far. Planned next steps, each its own pull
-request: choose the affected fixtures from a CSS change, add React fixture
-tests that check a JSX snippet renders the same normalised HTML as a fixture,
+request: add React fixture tests that check a JSX snippet renders the same normalised HTML as a fixture,
 and generate component docs from the fixtures.
 
 Where a fixture and today's markup differ, the markup moves to the fixture.
@@ -30,8 +29,8 @@ Each check takes a list of component folders and defaults to every folder.
 | Check         | Command                                             | Runs on                      |
 | ------------- | --------------------------------------------------- | ---------------------------- |
 | html-validate | `pnpm --filter @pathableai/fixtures check:html`     | Every fixture                |
-| Contract      | `pnpm --filter @pathableai/fixtures check:contract` | Every folder                 |
-| axe           | `pnpm --filter @pathableai/fixtures check:axe`      | Changed folders in CI        |
+| Contract      | `pnpm --filter @pathableai/fixtures check:contract` | Selected folders in CI       |
+| axe           | `pnpm --filter @pathableai/fixtures check:axe`      | Selected folders in CI       |
 | Harness tests | `pnpm --filter @pathableai/fixtures test`           | The harness's own unit tests |
 | All three     | `pnpm --filter @pathableai/fixtures check`          | Every folder                 |
 
@@ -40,7 +39,8 @@ Each check takes a list of component folders and defaults to every folder.
   `no-redundant-role` allowing only `role="list"` on a `<ul>`, loaded
   explicitly from `fixtures/.htmlvalidate.json`. It rejects inline
   `html-validate-*` directive comments. It is cheap, so CI runs it on every
-  fixture.
+  fixture, but only when a file under `fixtures/` or `pnpm-lock.yaml`
+  changed.
 - **Contract** fails when `fixtures/folders.json` and the component folders
   on disk disagree in either direction (so deleting a folder fails unless the
   list is edited in the same change), when a folder is not named after a page
@@ -68,6 +68,11 @@ The contract and axe checks need the built stylesheet, so run
 
 ## Choosing folders
 
+Two scripts choose folders, and CI checks their union together with the
+folders whose component page changed.
+
+### Folders whose files changed
+
 `node fixtures/harness/changed.mjs [base]` prints the component folders that
 `git diff --name-only <base>...HEAD -- fixtures/` touched, one per line;
 `base` defaults to `origin/main`. A change to `fixtures/harness/`,
@@ -79,11 +84,101 @@ selects every folder.
 cd fixtures && node harness/axe.mjs $(node harness/changed.mjs)
 ```
 
+### Folders a stylesheet change affects
+
+`node fixtures/harness/affected.mjs --base <ref> [--json <file>]`
+selects folders from the compiled CSS alone. No component page or fixture
+declares which source files it depends on.
+
+1. It compiles `packages/styles/src/index.scss` (what becomes `styles.css`)
+   at the merge base of `<ref>` and HEAD, and in the working tree, which is
+   the head: its fixtures, stylesheet and dependencies all come from one
+   checkout. The base compiles in a temporary git
+   worktree with the head's `node_modules`, so there is no second install.
+2. It parses both with PostCSS and pairs up rules by at-rule context (such as
+   a media query) and selector, comparing their declarations property by
+   property.
+3. A changed, added or removed rule contributes the classes in its selector
+   (read with the component-page check's `classesInSelector`).
+4. A changed custom property contributes the classes of every rule that reads
+   it through `var()`, followed through custom properties defined from it:
+   a change to `--a` reaches `.x { color: var(--b) }` when `--b: var(--a)`.
+5. A folder is selected when one of its fixtures uses one of those classes in
+   a `class` attribute, or names one of those custom properties.
+
+Every folder is selected when the change cannot be narrowed to classes:
+
+- `pnpm-lock.yaml`, `pnpm-workspace.yaml` or `patches/` changed, or the
+  `@uswds/uswds` range in `packages/styles/package.json` changed, because the
+  two sides would not compile with the same packages;
+- a changed rule has a selector that can match markup without any of the
+  classes it names, even when other selectors in the same list name one
+  (`button, .pathable-button`). That covers an element selector, the reset,
+  `@font-face`, a keyframe, and a class only inside `:not()`, `:has()` or
+  another pseudo-class (`:not(.x)`, `div:has(.x)`). An `:is()` or `:where()`
+  counts as needing a class only when every argument needs one, so
+  `:where(.x)` narrows to `.x` and `:is(button, .x)` selects every folder;
+- a custom property changed on a rule with no class (such as `:root`) and,
+  in the end, no rule reads it, directly or through other custom properties;
+- a changed custom property is read by such a rule.
+
+When no stylesheet source changed, it compiles nothing and selects nothing.
+It prints JSON: `all`, `allReasons`, and per folder the selected `files` and
+`reasons`. Each reason names the class or custom property, why it changed,
+the selector, and the source file and line from the Sass source map, such as
+`packages/styles/src/pathable-component-wrappers/pathable-dashboard.scss:13`.
+
+So a change to an `.pathable-activity-row` rule in `pathable-dashboard.scss`
+selects `activity-list`, a change to `.pathable-button` selects it through the
+buttons in its fixtures, and a change to `.pathable-tag` does not select it.
+
+Declarations that only change order within a rule, such as a shorthand
+moved after its longhand, count as a change to every property of the rule,
+and a changed statement at-rule such as `@import` or `@layer a, b` selects
+every folder. Whitespace is collapsed before comparing, except inside quoted
+strings, so `content: "a  b"` or `[data-label="A  B"]` changing is seen.
+
+Rule order is compared too. Among the rules that did not change, a rule
+whose position moved relative to the others contributes its classes, or
+selects every folder when it can match without a class. Markup restyled by
+two rules swapping matches both, so it carries the classes of the one that
+moved. A changed rule already contributes its classes. Each rule is
+identified by its selector and its own declarations, so a declaration that
+moves between two rules with the same selector (as Sass splits a block
+around a nested rule) counts as both rules moving.
+
+Known limit: a class added to the markup by JavaScript is not seen, because
+only the fixture HTML is read.
+
+### The union
+
+`INPUT_GLOBS` in `select.mjs` lists every path that can change the
+selection, and `fixtures/harness/workflow.test.mjs` fails when the
+workflow's `pull_request.paths` misses one.
+
+`node fixtures/harness/select.mjs <base>` lists the changed paths once,
+with `affected.mjs`'s listing (working tree against the merge base, renames
+as a delete and an add), and prints the union of the folders `changed.mjs`'s
+`selectFolders` picks from them, the folders `affected.mjs` selects, and
+every folder whose page `packages/styles/components/<slug>.md` changed (the
+contract check reads the page's slug and variants). A change to
+`packages/styles/scripts/check-component-pages.mjs` or `component-pages.mjs`,
+which the selection and the contract check read selectors, CSS and pages
+with, selects every folder, as a change to `fixtures/harness/` does. It
+prints one folder per
+line, with the reasons for each on standard error. `--all` selects
+every folder. In GitHub Actions it also writes the `folders` and
+`fixtures_changed` step outputs and a job summary.
+
 ## In CI
 
 [`.github/workflows/fixtures.yml`](../../.github/workflows/fixtures.yml) runs
-on a pull request that changes `fixtures/**`, the workflow itself or
-`pnpm-lock.yaml`, and on every push to `main`. It:
+on a pull request that changes any input of the selection (`fixtures/**`,
+`packages/styles/components/*.md`, the component-page scripts
+`check-component-pages.mjs` and `component-pages.mjs` it reads selectors and
+pages with, `packages/styles/src/**/*.scss` or
+`*.sass`, `packages/styles/package.json`, `pnpm-lock.yaml`,
+`pnpm-workspace.yaml` or `patches/**`) or the workflow itself, and on every push to `main`. It:
 
 1. builds `@pathableai/styles`;
 2. runs ESLint, markdownlint and Prettier on `fixtures/`, because CI Full's
@@ -91,15 +186,16 @@ on a pull request that changes `fixtures/**`, the workflow itself or
    request that changes only `fixtures/`;
 3. runs the harness tests, including the integration tests that feed
    known-bad markup through each check;
-4. runs html-validate and the contract on every folder;
-5. runs axe on the folders `changed.mjs` selects, or on every folder on
-   `main` and when the workflow or the lockfile changed, so a workflow edit
-   or a dependency update (such as a new axe-core) is exercised before it
-   merges;
-6. uploads the axe report as the `fixtures-axe-report` artifact.
+4. selects folders with `select.mjs`;
+5. runs html-validate on every fixture when a file under `fixtures/` or
+   `pnpm-lock.yaml` changed (the lockfile can change the html-validate
+   version), and skips it otherwise;
+6. runs the contract check and axe on the selected folders, and skips them
+   when none was selected, except that the contract also runs, on every
+   folder, when a file under `fixtures/` changed, so its `folders.json`
+   check catches a deleted folder;
+7. uploads the axe report as the `fixtures-axe-report` artifact.
 
-It is not a required check.
-
-A pull request that changes only `packages/styles` does not run it yet, so a
-SCSS change that removes a class a fixture uses is caught on `main`, not on
-the pull request. Selecting fixtures from SCSS changes is a planned step.
+The job summary lists each selected folder with its reasons, and says
+explicitly when no folder was selected. On `main`, and on a pull request that
+changes the workflow, every folder is checked. It is not a required check.
