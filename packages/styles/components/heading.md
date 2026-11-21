@@ -8,6 +8,9 @@ variants:
   - axis: level
     default: none
     values: [none, level-1, level-2, level-3, level-4, level-5, level-6]
+  - axis: surface
+    default: none
+    values: [none, on-dark]
 guarantees:
   - id: level-size
     status: unverified
@@ -33,6 +36,9 @@ guarantees:
   - id: dark-background-contrast
     status: unmet
     claim: Inside `pathable-dark-background`, the heading text has a contrast of at least 4.5:1 on the container background, or 3:1 for large text.
+  - id: on-dark-contrast
+    status: unverified
+    claim: With `pathable-heading--on-dark`, the heading text is white at every level, with a contrast of 12.48:1 on the `pathable-dark-background` container, wherever the heading sits inside it.
   - id: no-level
     status: unverified
     claim: Without a level modifier the class sets only the colour and the zero margin, and the typeface, size, weight and line height come from other rules.
@@ -76,23 +82,25 @@ Load the stylesheet once in the application; no JavaScript is needed:
 
 ## Variants
 
-Add one level modifier to `pathable-heading`.
+Add one level modifier to `pathable-heading`. Add `pathable-heading--on-dark` as well when the heading is on a dark background.
 
-| Axis  | Value     | Class                       | What it is for                                                  |
-| ----- | --------- | --------------------------- | --------------------------------------------------------------- |
-| level | `none`    | none                        | Colour and zero margin only; the font is not set                |
-| level | `level-1` | `pathable-heading--level-1` | 2rem (32 px) heading typeface, regular, for the page title      |
-| level | `level-2` | `pathable-heading--level-2` | 1.5rem (24 px) subheading typeface, bold, for major sections    |
-| level | `level-3` | `pathable-heading--level-3` | 1.25rem (20 px) subheading typeface, bold, for sections         |
-| level | `level-4` | `pathable-heading--level-4` | 1.125rem (18 px) subheading typeface, bold, for subsections     |
-| level | `level-5` | `pathable-heading--level-5` | 1rem (16 px) body typeface, bold, for small group headings      |
-| level | `level-6` | `pathable-heading--level-6` | 0.875rem (14 px) body typeface, bold, for the smallest headings |
+| Axis    | Value     | Class                       | What it is for                                                  |
+| ------- | --------- | --------------------------- | --------------------------------------------------------------- |
+| level   | `none`    | none                        | Colour and zero margin only; the font is not set                |
+| level   | `level-1` | `pathable-heading--level-1` | 2rem (32 px) heading typeface, regular, for the page title      |
+| level   | `level-2` | `pathable-heading--level-2` | 1.5rem (24 px) subheading typeface, bold, for major sections    |
+| level   | `level-3` | `pathable-heading--level-3` | 1.25rem (20 px) subheading typeface, bold, for sections         |
+| level   | `level-4` | `pathable-heading--level-4` | 1.125rem (18 px) subheading typeface, bold, for subsections     |
+| level   | `level-5` | `pathable-heading--level-5` | 1rem (16 px) body typeface, bold, for small group headings      |
+| level   | `level-6` | `pathable-heading--level-6` | 0.875rem (14 px) body typeface, bold, for the smallest headings |
+| surface | `none`    | none                        | The theme text colour, for a heading on a light background      |
+| surface | `on-dark` | `pathable-heading--on-dark` | White, for a heading on `pathable-dark-background`              |
 
 ## Tokens
 
 Every value comes from a theme token. The text colour at every level is
 `--pathable-color-text`, except inside `pathable-section--dark`, which colours
-heading elements itself.
+heading elements itself, and with `pathable-heading--on-dark`, which is white.
 
 | Level | Typeface                     | Font size                         | Weight                          | Line height                           |
 | ----- | ---------------------------- | --------------------------------- | ------------------------------- | ------------------------------------- |
@@ -135,10 +143,12 @@ from the package source and no test checks it yet.
 The scales-with-root guarantee is unmet. Today the font-size tokens are fixed
 px values, so the level sizes do not follow the user's default font size.
 
-The dark-background-contrast guarantee is unmet: today the heading is drawn in
-the theme text colour inside `pathable-dark-background`, which in the default
-theme is the same colour as the container background. Do not put a
-`pathable-heading` in that container yet.
+The dark-background-contrast guarantee is unmet: without a modifier the heading
+is drawn in the theme text colour inside `pathable-dark-background`, which in
+the default theme is the same colour as the container background. Add
+`pathable-heading--on-dark` to a heading in that container. The container does
+not recolour headings itself, because CSS cannot tell whether a light card sits
+between the container and the heading.
 
 ## The consumer owns
 

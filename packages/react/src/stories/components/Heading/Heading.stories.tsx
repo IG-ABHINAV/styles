@@ -16,7 +16,7 @@ const meta = {
 
 **Underlying element**: Always \`h1\`–\`h6\`, determined by \`level\`. No \`as\` override is available — \`Heading\` is always a heading element.
 
-**Accessibility**: Native heading elements (\`h1\`–\`h6\`) provide correct heading role and level to assistive technology without ARIA overrides. All levels use \`--pathable-color-text\` (12.48:1 contrast on white), meeting WCAG AA requirements.`,
+**Accessibility**: Native heading elements (\`h1\`–\`h6\`) provide correct heading role and level to assistive technology without ARIA overrides. All levels use \`--pathable-color-text\` (12.48:1 contrast on white), meeting WCAG AA requirements. On a dark background such as \`pathable-dark-background\`, set \`onDark\`: the default colour is the container's own (1.00:1), and \`onDark\` draws the heading in white (12.48:1 on PathAble Blue). Do not set it on a light background, where white on white is unreadable.`,
       },
     },
   },
@@ -121,12 +121,22 @@ export const WithCustomClass: Story = {
 }
 
 export const OnDark: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Set `onDark` on a heading that sits on a dark background such as `pathable-dark-background`, at any depth in it. The container does not recolour headings itself, so without the prop the heading takes the theme text colour, which is the container colour in the default theme. Do not set it on a heading on a light background, such as a card inside the container.',
+      },
+    },
+  },
   render: () => (
     <div className="pathable-dark-background pathable-padding-3">
       <Heading level={2} onDark>
         Heading on a dark background
       </Heading>
-      <p>Body text in the same container.</p>
+      <p className="pathable-text pathable-text--body">
+        Body text in the same container.
+      </p>
     </div>
   ),
 }
