@@ -48,6 +48,7 @@ permissions:
 env:
   REENABLED_FOLDERS: >-
     alert
+    breadcrumb
     tokens-color
     tokens-color-state-tokens
     tokens-color-system-tokens
