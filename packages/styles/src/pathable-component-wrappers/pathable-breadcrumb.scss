@@ -13,12 +13,50 @@
   @extend .usa-breadcrumb;
 }
 
+.pathable-breadcrumb--truncate {
+  @extend .usa-breadcrumb--truncate;
+
+  // USWDS clips a single inline line of items with the list's own ellipsis.
+  // The last item then sticks out past the list, which leaves axe unable to
+  // decide the contrast of the trail. A flex row keeps every item inside the
+  // list: the ellipsis moves from the list to the last item, at the same place.
+  .pathable-breadcrumb__list {
+    @include at-media($theme-breadcrumb-min-width) {
+      display: flex;
+      // The width of the space between inline items that flex does not keep.
+      column-gap: 0.25em;
+    }
+  }
+
+  .pathable-breadcrumb__list-item {
+    @include at-media($theme-breadcrumb-min-width) {
+      flex: none;
+
+      &:last-child {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
 .pathable-breadcrumb__list {
   @extend .usa-breadcrumb__list;
 }
 
 .pathable-breadcrumb__list-item {
   @extend .usa-breadcrumb__list-item;
+
+  // The parent link is an inline-block taller than the line of its inline
+  // item, so the item's box overlaps the link and axe cannot decide the
+  // link's contrast. A block item has the link's own box.
+  @include at-media-max($theme-breadcrumb-min-width) {
+    &:nth-last-child(2) {
+      display: block;
+    }
+  }
 }
 
 .pathable-breadcrumb__link {
