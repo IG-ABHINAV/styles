@@ -16,27 +16,42 @@
 .pathable-breadcrumb--truncate {
   @extend .usa-breadcrumb--truncate;
 
-  // USWDS clips a single inline line of items with the list's own ellipsis.
-  // The last item then sticks out past the list, which leaves axe unable to
-  // decide the contrast of the trail. A flex row keeps every item inside the
-  // list: the ellipsis moves from the list to the last item, at the same place.
+  // From 480px the trail sits on one line. USWDS cuts it with the list's own
+  // ellipsis, but the last item then runs past the list and axe cannot decide
+  // the contrast of the links. A flex row keeps every item inside the list, so
+  // each item carries its own ellipsis instead.
+  //
+  // The trail still has one cut point, at its end, as in USWDS. flex-shrink
+  // shares the overflow in proportion to it, so each item from the end shrinks
+  // a million times faster than the one before it: the last item gives up its
+  // width first, and an earlier item only starts to shrink when the ones after
+  // it are down to nothing. The factors are that far apart so an item that
+  // should not shrink yet loses less than a pixel.
   .pathable-breadcrumb__list {
     @include at-media($theme-breadcrumb-min-width) {
       display: flex;
-      // The width of the space between inline items that flex does not keep.
+      // Flex items have no space between them, as inline items do.
       column-gap: 0.25em;
     }
   }
 
   .pathable-breadcrumb__list-item {
     @include at-media($theme-breadcrumb-min-width) {
-      flex: none;
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:nth-last-child(3) {
+        flex-shrink: 1000000;
+      }
+
+      &:nth-last-child(2) {
+        flex-shrink: 1000000000000;
+      }
 
       &:last-child {
-        flex: 0 1 auto;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        flex-shrink: 1000000000000000000;
       }
     }
   }
