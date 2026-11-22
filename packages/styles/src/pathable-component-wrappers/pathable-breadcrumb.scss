@@ -16,43 +16,16 @@
 .pathable-breadcrumb--truncate {
   @extend .usa-breadcrumb--truncate;
 
-  // From 480px the trail sits on one line. USWDS cuts it with the list's own
-  // ellipsis, but the last item then runs past the list and axe cannot decide
-  // the contrast of the links. A flex row keeps every item inside the list, so
-  // each item carries its own ellipsis instead.
-  //
-  // The trail still has one cut point, at its end, as in USWDS. flex-shrink
-  // shares the overflow in proportion to it, so each item from the end shrinks
-  // a million times faster than the one before it: the last item gives up its
-  // width first, and an earlier item only starts to shrink when the ones after
-  // it are down to nothing. The factors are that far apart so an item that
-  // should not shrink yet loses less than a pixel.
+  // The list clips the trail at its padding box, which its negative side
+  // margins put 4px outside the nav on each side. Cut text then reaches past
+  // the nav, the only box with a background, and axe cannot work out the
+  // colour behind it. The list paints the nav's own background over its
+  // content box, which is the nav's width, so the text sits on a box that
+  // holds it. The result is pixel for pixel the same as without it.
   .pathable-breadcrumb__list {
     @include at-media($theme-breadcrumb-min-width) {
-      display: flex;
-      // Flex items have no space between them, as inline items do.
-      column-gap: 0.25em;
-    }
-  }
-
-  .pathable-breadcrumb__list-item {
-    @include at-media($theme-breadcrumb-min-width) {
-      flex: 0 1 auto;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-
-      &:nth-last-child(3) {
-        flex-shrink: 1000000;
-      }
-
-      &:nth-last-child(2) {
-        flex-shrink: 1000000000000;
-      }
-
-      &:last-child {
-        flex-shrink: 1000000000000000000;
-      }
+      background-color: inherit;
+      background-clip: content-box;
     }
   }
 }
@@ -71,9 +44,31 @@
     &:nth-last-child(2) {
       display: block;
     }
+
+    // The other items are moved off screen but stay in the tab order, so
+    // screen readers keep the whole trail. An item whose link has focus comes
+    // back into the line, above the parent link, so the focus can be seen.
+    &:focus-within {
+      position: static;
+    }
   }
 }
 
 .pathable-breadcrumb__link {
   @extend .usa-breadcrumb__link;
+}
+
+// The full USWDS build draws its focus outline on every link from its element
+// styles (uswds-elements), which this package does not load, so the link draws
+// it here. Like
+// .pathable-link's, it is drawn on the surface behind the link and takes that
+// surface's ring colour. The list's 4px padding is the outline's width, so the
+// outline on the first link fits inside it.
+.pathable-breadcrumb__link:focus {
+  @include focus-outline;
+
+  outline-color: var(
+    --pathable-surface-focus-ring,
+    var(--pathable-color-focus-ring)
+  );
 }

@@ -2,8 +2,16 @@
 '@pathableai/styles': minor
 ---
 
-Add the `pathable-breadcrumb--truncate` modifier. From 480px it keeps the
-breadcrumb trail on one line and cuts a trail wider than its container off at
-the end with an ellipsis, instead of wrapping it. Below 480px the trail shows
-only the parent link, as before, and that link's list item is now a block item;
-the link renders in the same place.
+Add the `pathable-breadcrumb--truncate` modifier, the wrapper for USWDS's
+`usa-breadcrumb--truncate`. From 480px it keeps the breadcrumb trail on one
+line and cuts a trail wider than its container off at the end with an
+ellipsis, instead of wrapping it.
+
+Below 480px the parent link's list item in `pathable-breadcrumb` is a block
+item; the link renders in the same place. The items hidden at that width stay
+in the tab order for screen readers, and one whose link has focus is shown
+above the parent link while it has focus, so the focus can be seen.
+
+Breadcrumb links draw the PathAble focus outline (`--pathable-color-focus-ring`,
+or the surface's `--pathable-surface-focus-ring`) instead of the browser's
+default focus ring.

@@ -12,7 +12,7 @@ guarantees:
   - id: wrapping
     claim: From a viewport width of 480 px the trail wraps onto further lines when it is wider than its container, each item but the last is followed by a chevron separator, and lines are 1.5 times the font size apart.
   - id: narrow-parent-link
-    claim: Below a viewport width of 480 px only the parent link, the item before the current page, is shown, with a back arrow before it; the other items are hidden from view and stay in the page for screen readers.
+    claim: Below a viewport width of 480 px only the parent link, the item before the current page, is shown, with a back arrow before it; the other items are hidden from view and stay in the page for screen readers, and one whose link has focus is shown while it has focus.
   - id: link-style
     claim: Each link is in the theme link colour with no underline on the link itself, the underline is drawn under its text only, and the link changes to the darker hover colour on hover.
   - id: spacing
