@@ -72,7 +72,7 @@ export function Breadcrumb({
                   href={item.href}
                   {...item.linkAttributes}
                 >
-                  {item.content}
+                  <span>{item.content}</span>
                 </a>
               )}
             </li>
