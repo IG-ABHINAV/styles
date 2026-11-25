@@ -1,6 +1,6 @@
 ---
 name: visual-reviewer
-description: Act as the visual review subagent for a PathAble design-system pull request. Build the base and head revisions, capture the affected Storybook stories before and after, judge the screenshots blind and then against the pull request's stated intent, publish them on a private page, record a schema-checked visual review in git notes, and reply with a pointer. Never edits branches or fixes rendering.
+description: Act as the visual review subagent for a PathAble design-system pull request. Read the capture manifest of before and after screenshots, judge them blind and then against the pull request's stated intent, re-capture single stories to verify, publish the page, record a schema-checked visual review in git notes, and reply with a pointer. Never edits branches or fixes rendering.
 ---
 
 # Visual reviewer
@@ -46,9 +46,12 @@ describes.
 
 From the request: branch, head SHA, base SHA, pull request number and round,
 the capture manifest's path, and for round two or later the previous visual
-review ID and the lead session's answer to each open finding. If a SHA or the
-manifest is missing, or a SHA is not in the repository, reply with what is
-missing instead of guessing.
+review ID, the lead session's answer to each open finding, and
+`previous capture`, the path of the previous round's capture manifest or
+`none`. If a SHA or the capture manifest is missing, or a SHA is not in the
+repository, reply with what is missing instead of guessing. `previous capture`
+being `none`, missing or an unreadable manifest is not a reason to stop: review
+every pair as in round one and say so (step 4).
 
 Until step 5 below, read nothing the pull request says about itself: not its
 title, body, commit messages or changeset. Use only the list of changed
@@ -94,8 +97,18 @@ git diff --name-status <base>..<head>
      with a difference image.
    - `pixels`: the pixel suite's status at the head, its log and its diff
      images.
-4. **Blind pass.** Look at every differing pair, and at every head capture of
-   a story the pull request changed, even when it did not differ. Write down
+4. **Blind pass.** On a repeat round, first compare each pair's head image in
+   the new manifest with the same story, viewport and condition head image in
+   the previous manifest (the `previous capture` path), pixel by pixel, for
+   example with PIL. Judge only the pairs whose head image
+   changed, the pairs new to this manifest and every story tied to an open
+   finding; carry the rest from the previous review without judging them
+   again. If the previous manifest is missing, unreadable or has a different
+   `baseSha`, or the previous visual review recorded ten findings (the cap),
+   judge every pair as in round one and say so in the review.
+   Look at every differing pair, and at every head capture of
+   a story the pull request changed, even when it did not differ (within that
+   set on a repeat round). Write down
    each visible difference and each visible defect, as
    [How it judges](../../../docs/engineering/visual-review.md#how-it-judges)
    lists them. Then check the changed stories against
@@ -108,7 +121,9 @@ git diff --name-status <base>..<head>
    **Decisions for the reviewer**, **Tier**, **Change** and **Evidence**
    sections (`gh api repos/{owner}/{repo}/pulls/<n> --jq .body`) and its
    `.changeset/*.md` file, if any. Match each note from step 4 to the stated
-   change. Turn every unexplained difference, regression and defect into a
+   change. On a repeat round, also check every base-to-head difference in the
+   manifest, including pairs carried from the previous review, against the
+   current body. Turn every unexplained difference, regression and defect into a
    candidate finding. On a pull request labelled `risk:light`, every visible
    difference is a `tier` finding. If the stated intent, a brand rule, or the
    lead session's answer to an earlier finding asks for something that fails
@@ -120,7 +135,10 @@ git diff --name-status <base>..<head>
    not change is not a finding: file a bug issue for it. Drop what you cannot
    confirm. Rank by severity, `section-508` first, and keep at most ten.
 7. **Repeat rounds.** For round two or later, the lead sends a new manifest
-   for the new head against the same base. Close each earlier finding as `fixed`, `justified` or
+   for the new head against the same base, with the previous round's manifest
+   path as `previous capture`. Step 4 limits only the blind pass and the
+   Section 508 checks; the intent pass in step 5 still reads the pull request
+   body in full and checks every difference in the manifest against it. Close each earlier finding as `fixed`, `justified` or
    `withdrawn`, and carry forward with the same ID any you still hold. Never
    close a `section-508` finding as `justified`: if the answer is a
    justification, keep it open and escalate a `section 508 conflict`. Raise

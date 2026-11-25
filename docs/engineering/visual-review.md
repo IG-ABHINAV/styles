@@ -49,8 +49,9 @@ still apply to it.
 The visual reviewer starts with a clean context and reads only:
 
 - the request: branch, head SHA, base SHA, pull request number and round, plus
-  for a repeat round the previous visual review ID and the implementation
-  session's answer to each open finding
+  for a repeat round the previous visual review ID, the implementation
+  session's answer to each open finding, and `previous capture`, the path of
+  the previous round's capture manifest or `none`
 - the list of changed paths from the base SHA to the head SHA, which it uses
   to choose the stories to capture, not to judge the code
 - the stories it captures, rendered at both SHAs
@@ -68,11 +69,10 @@ content beyond what it needs to pick stories and confirm a finding's cause.
 
 ## What it captures
 
-Capturing is mechanical and judging is not, so they are split. The
-[`visual-capture`](../../.claude/agents/visual-capture.md) subagent, on a
-small model, runs
+Capturing is mechanical and judging is not, so they are split. The lead
+session runs
 [`scripts/visual-capture.mjs`](../../scripts/visual-capture.mjs) for the base
-and head SHAs. The script does everything in the list below except naming
+and head SHAs, in the background. The script does everything in the list below except naming
 themes, and writes a manifest of image paths and numbers. The visual reviewer
 starts with that manifest, checks its SHAs and its story choice, and judges.
 It runs the same script with `--only` to add a story the choice missed or to
@@ -296,7 +296,17 @@ The lead session sends the visual reviewer a request at the same
 time as the code review request, on the same pushed SHA (see
 [Agent merge](git-workflow.md#agent-merge)). A repeat request after a fix names the new SHA, the previous visual review
 ID, and for each open finding either the fixing commit or a written
-justification.
+justification, and `previous capture: <path to the previous round's capture
+manifest, or none>`. With `none`, a missing value or an unreadable manifest the
+reviewer reviews every pair as in round one and says so.
+
+Both reviewers read the pull request body. When the lead session's answer
+changes only the body and adds no commit, the lead runs both reviewers again on
+the same SHA. With no commits since the previously reviewed SHA, every pair's
+head image is unchanged, so the visual reviewer runs the blind pass and the
+Section 508 checks only on the stories tied to open findings, which keeps the
+run small. The intent pass still checks every base-to-head difference in the
+manifest against the new body.
 
 The reviewer records the review with `pnpm visual:record` and replies with a
 pointer only, `refs/notes/visual @ <sha> (visual review <id>)`, plus the
@@ -306,6 +316,20 @@ On a repeat round it captures again at the new SHA, and closes each finding
 as `fixed`, `justified` or `withdrawn`, as the code reviewer does. A
 `justified` blocking finding goes in the pull request's **Decisions for the
 reviewer**.
+
+Before the blind pass, the reviewer compares each pair's head image in the
+new manifest with the head image of the same story, viewport and condition in
+the previous manifest, pixel by pixel. The blind pass and the Section 508
+checks (contrast rows, 200 % text, focus indicator) then cover every pair
+whose head image changed since the previous round, every pair new to this
+manifest, and every story tied to an open finding. A pair whose head image is
+unchanged since the previous round and that is tied to no open finding is
+carried from the previous review and not judged again. If the previous
+manifest is missing, unreadable or has a different `baseSha`, or the previous
+visual review recorded ten findings (the cap), the reviewer reviews every pair
+as in round one and says so. The intent pass still reads the pull request body
+in full every round and checks every base-to-head difference in the manifest,
+including pairs carried from the previous review, against the current body.
 
 A review covers the reviewed SHA. It still covers a later head when every
 commit since changes no path, or when the head only merged the base branch in
