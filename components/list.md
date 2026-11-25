@@ -21,6 +21,8 @@ guarantees:
     claim: A list nested inside an item of the list has a top margin of 0.25em.
   - id: unstyled-markers
     claim: With the unstyled modifier, the list has no bullets or numbers, no left padding and no top or bottom margin, and its items have no bottom margin and no width limit.
+  - id: inside-prose
+    claim: A list with the unstyled modifier that is a direct child of pathable-prose renders the same as one outside it, with no markers, no left padding, no top or bottom margin, and items with no bottom margin and no width limit.
 ---
 
 # List
@@ -98,6 +100,8 @@ as wide as its container.
 - Choosing `<ol>` when order matters and `<ul>` when it does not; screen
   readers announce the list type and the number of items.
 - Keeping each item short, and writing items in parallel form.
-- A name for an unstyled list when the items need context, with `aria-label`.
+- List semantics for an unstyled list. Some browsers stop announcing a list
+  whose items draw no markers, so give an unstyled `<ul>` `role="list"` and a
+  name (`aria-label` or `aria-labelledby`), as the states here do.
 - Layout around the list: the width of its container and the spacing between
   the list and the content around it.
