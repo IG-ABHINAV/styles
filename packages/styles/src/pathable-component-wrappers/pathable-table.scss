@@ -5,6 +5,12 @@
 // JS-driven: No
 // Requires .usa-* on DOM: No
 //
+// Static USWDS wrappers:
+//   .pathable-table--stacked                — rows become blocks below 480px, each cell labelled
+//   .pathable-table--stacked-header         — as stacked, with the row header shown as a heading
+//   .pathable-table--sticky-header          — header row stays in view while scrolling
+//   .pathable-table-container--scrollable   — horizontally scrolling container (the consumer adds tabindex="0")
+//
 // Application-oriented modifiers:
 //   .pathable-table--sortable        — sortable column headers with sort indicators
 //   .pathable-table--selected        — selected row styling
@@ -40,6 +46,46 @@
 
 .pathable-table--striped {
   @extend .usa-table--striped;
+}
+
+.pathable-table--stacked {
+  @extend .usa-table--stacked;
+}
+
+.pathable-table--stacked-header {
+  @extend .usa-table--stacked-header;
+}
+
+// USWDS designs the stacked cells for border-box and gets it from a global
+// reset PathAble does not ship. Without it, the 1rem side padding makes each
+// block cell wider than its row and the row separator stops short.
+.pathable-table--stacked,
+.pathable-table--stacked-header {
+  @include at-media-max('mobile-lg') {
+    th,
+    td {
+      box-sizing: border-box;
+    }
+  }
+}
+
+.pathable-table--sticky-header {
+  @extend .usa-table--sticky-header;
+}
+
+.pathable-table-container--scrollable {
+  @extend .usa-table-container--scrollable;
+
+  // The ring is drawn outside the container, on the surface behind it, so it
+  // takes that surface's --pathable-surface-focus-ring, as the state-focus
+  // mixin does; drawn inside, it would lie over the light table cells.
+  // :focus-visible only, so focus on a control inside does not outline the
+  // whole container.
+  &:focus-visible {
+    outline: 2px solid
+      var(--pathable-surface-focus-ring, var(--pathable-color-focus-ring));
+    outline-offset: 2px;
+  }
 }
 
 // --- Sortable column headers ---
@@ -264,6 +310,10 @@
       outline: 2px solid Highlight;
       outline-offset: -1px;
     }
+  }
+
+  .pathable-table-container--scrollable:focus-visible {
+    outline-color: Highlight;
   }
 
   .pathable-table--scrollable {
