@@ -1,73 +1,93 @@
 # Agent Instructions
 
-This repository is the PathAble design system: the `@pathableai/styles` CSS
-package, the `@pathableai/react` component package, and a Storybook for each.
-See [README.md](README.md) for setup and commands.
+This repository is the PathAble design system. Current delivery work centers
+on the `@pathableai/styles` CSS package, its human product documentation and
+the consumer agent guidance that ships with it and is being completed. The existing
+`@pathableai/react` package and React Storybook remain in the repository but
+are not current refactor targets. See [README.md](README.md) for setup and
+commands.
 
 This file is a routing table. Read the owning document for the task in front of
 you, and only when it is relevant; do not load every document up front. When an
-owning document and this file disagree, the owning document wins for its topic,
-and the constitution wins over both.
+owning document and this file disagree, the owning document wins for its topic.
 
-## Current refactor: `@pathableai/styles` is becoming a thin USWDS wrapper
+## Current refactor: three `@pathableai/styles` deliverables
 
-The styles package is being refactored into a thin wrapper around USWDS that
-exposes `pathable-` names (no `usa-` in the public contract), re-exports
-unprefixed USWDS tokens and utilities under the same names, and ships compiled
-CSS. The component pages (`components/`) and `fixtures/` already describe that
-target, so a difference between them and the code is a defect in the code:
-never change them back to match today's SCSS. The consumer docs
-(`packages/styles/README.md`, `BRAND_RULES.md` and the React agent guidance)
-still describe the old `usa-` model and are the next work. CI is expected to be partly red while the code catches up.
-Read [`docs/engineering/target-state.md`](docs/engineering/target-state.md)
-before changing the styles package, its fixtures or component pages. Where
-`packages/styles/AGENTS.md` or `BRAND_RULES.md` describe `usa-` dual-classing,
-they describe the code being replaced, and `target-state.md` wins for the
-direction of the package (the constitution still wins overall).
+The active refactor produces three things:
+
+1. **Human product documentation** in the styles Storybook published at
+   `https://pathableai-org.github.io/styles/`.
+2. **Compiled CSS** in the `@pathableai/styles` npm package: a thin,
+   PathAble-branded wrapper around the static portion of USWDS.
+3. **Consumer agent guidance** in that same npm package, so its prose and
+   examples match the installed CSS version.
+
+Do not call both kinds of agent documentation "agent-facing docs."
+**Contributor agent guidance** is the repository-local `AGENTS.md`, engineering
+documentation, skills and role instructions used to change this repository.
+**Consumer agent guidance** is auditable Markdown for agents using the
+installed package.
+
+The component pages in `components/` are the shared product specifications and
+the HTML in `fixtures/` is the canonical example markup. The fixtures feed the
+human documentation, the installed component pages and the accessibility and
+CSS-contract checks. A difference between those sources and an in-scope static
+component's CSS is a defect in the CSS; never change the page or fixture back
+to match legacy SCSS.
+
+The current catalog is limited to components whose defining behavior needs no
+design-system JavaScript. `packages/react/`, the React Storybook and consumer
+guidance, `packages/styles/src/js/`, and the existing `./js` exports are
+**retained but deferred**. Unless a task explicitly puts one in scope, do not
+modernize, expand or remove it, and do not use its current behavior to redefine
+the styles target. A shared-source change may still require a mechanical
+generated React-guidance update or an existing check to pass; that does not
+make React behavior part of the change.
+
+Read [`docs/engineering/intent.md`](docs/engineering/intent.md) for the product
+model and [`docs/engineering/target-state.md`](docs/engineering/target-state.md)
+before changing the styles package, its fixtures or component pages. Where a
+package document describes `usa-` dual-classing or JavaScript-powered
+components, it describes retained implementation, not the current direction
+of the package.
 
 ## Where the rules live
 
-| When you are…                                                                                                                                                      | Read                                                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Making any architectural, packaging, release or quality-gate decision                                                                                              | [`.specify/memory/constitution.md`](.specify/memory/constitution.md)                                                                                  |
-| Changing the direction of `@pathableai/styles`, or judging a red check, a fixture or a doc against the refactor                                                    | [`docs/engineering/target-state.md`](docs/engineering/target-state.md)                                                                                |
-| Deciding why a change belongs here, who it serves, or how a consumer need becomes a release                                                                        | [`docs/engineering/intent.md`](docs/engineering/intent.md)                                                                                            |
-| Choosing a risk tier, branching, opening or merging a pull request                                                                                                 | [`docs/engineering/git-workflow.md`](docs/engineering/git-workflow.md)                                                                                |
-| Leading a delivery issue through specification, plan, implementation and its review and verification subagents, or choosing a role's model and effort              | [`docs/engineering/orchestration.md`](docs/engineering/orchestration.md) and the `orchestrate-stack` skill                                            |
-| Verifying a slice, writing `verification.md` claims, or recording a verification report                                                                            | [`docs/engineering/verification-harness.md`](docs/engineering/verification-harness.md) and the `verification-harness` skill                           |
-| Reviewing a pushed revision as the `code-reviewer` subagent, or running the pre-push self-review                                                                   | [`docs/engineering/code-review.md`](docs/engineering/code-review.md) and the `code-reviewer` skill                                                    |
-| Reviewing what a pushed revision renders as the `visual-reviewer` subagent                                                                                         | [`docs/engineering/visual-review.md`](docs/engineering/visual-review.md) and the `visual-reviewer` skill                                              |
-| Running a drift review of one area of the design system                                                                                                            | [`docs/engineering/drift-review.md`](docs/engineering/drift-review.md) and the `drift-review` skill                                                   |
-| Filing a delivery issue or writing a pull request body                                                                                                             | [`.github/ISSUE_TEMPLATE/delivery.md`](.github/ISSUE_TEMPLATE/delivery.md) and [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| Editing tokens, SCSS, CSS, component classes, utilities or brand-facing UI                                                                                         | [`packages/styles/AGENTS.md`](packages/styles/AGENTS.md) and [`packages/styles/BRAND_RULES.md`](packages/styles/BRAND_RULES.md)                       |
-| Writing or changing `@pathableai/styles` Storybook stories                                                                                                         | [`packages/styles/STORY_AUTHORING.md`](packages/styles/STORY_AUTHORING.md)                                                                            |
-| Writing or changing HTML fixtures in `fixtures/`                                                                                                                   | [`fixtures/README.md`](fixtures/README.md)                                                                                                            |
-| Writing or changing component pages in `components/`, or the docs built from them                                                                                  | [`components/README.md`](components/README.md)                                                                                                        |
-| Changing `@pathableai/react` components or their public API                                                                                                        | [`packages/react/README.md`](packages/react/README.md)                                                                                                |
-| Writing or changing `@pathableai/react` stories                                                                                                                    | [`packages/react/STORYBOOK_STANDARD.md`](packages/react/STORYBOOK_STANDARD.md)                                                                        |
-| Using `@pathableai/react` as a consumer, or checking what its consumer guidance says                                                                               | [`packages/react/agent-guidance/pathable-react/`](packages/react/agent-guidance/pathable-react/)                                                      |
-| Deciding whether a React change must update that consumer guidance                                                                                                 | [`.github/instructions/react-agent-guidance.instructions.md`](.github/instructions/react-agent-guidance.instructions.md)                              |
-| Adding or changing component tests, behavior contracts or parity checks                                                                                            | [`docs/testing/README.md`](docs/testing/README.md)                                                                                                    |
-| Working on theming, `createTheme`, `ThemeProvider` or overridable tokens                                                                                           | [`docs/theming/consumer-guide.md`](docs/theming/consumer-guide.md) and [`docs/theming/token-vocabulary.md`](docs/theming/token-vocabulary.md)         |
-| Changing code in `@pathableai/styles` or `@pathableai/react` (changesets are for code changes only; docs-only changes need none, even docs shipped in the package) | [`.changeset/README.md`](.changeset/README.md)                                                                                                        |
-| Specifying, planning or implementing a feature with Spec Kit                                                                                                       | The `speckit-*` skills in [`.agents/skills/`](.agents/skills/) and the constitution above                                                             |
-| Changing Spec Kit templates or presets, reviewing a Spec Kit upgrade, or checking which Spec Kit steps to skip                                                     | [`docs/engineering/spec-kit.md`](docs/engineering/spec-kit.md)                                                                                        |
+| When you are…                                                                                                                                                      | Read                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Making an architectural or packaging decision                                                                                                                      | [`docs/engineering/intent.md`](docs/engineering/intent.md), [`docs/engineering/target-state.md`](docs/engineering/target-state.md), and the owning package documentation       |
+| Making a release or quality-gate decision                                                                                                                          | [`docs/engineering/git-workflow.md`](docs/engineering/git-workflow.md), [`.changeset/README.md`](.changeset/README.md), and [`docs/testing/README.md`](docs/testing/README.md) |
+| Changing the direction of `@pathableai/styles`, or judging a fixture or doc against the refactor                                                                   | [`docs/engineering/target-state.md`](docs/engineering/target-state.md)                                                                                                         |
+| Deciding why a change belongs here, who it serves, or how a consumer need becomes a release                                                                        | [`docs/engineering/intent.md`](docs/engineering/intent.md)                                                                                                                     |
+| Choosing a risk tier, branching, opening or merging a pull request                                                                                                 | [`docs/engineering/git-workflow.md`](docs/engineering/git-workflow.md)                                                                                                         |
+| Leading a delivery issue through implementation and its review and verification subagents, or choosing a role's model and effort                                   | [`docs/engineering/orchestration.md`](docs/engineering/orchestration.md) and the `orchestrate` skill                                                                           |
+| Defining High-risk claims or verifying them as the `verifier` subagent                                                                                             | [`docs/engineering/verification-harness.md`](docs/engineering/verification-harness.md) and the `verification-harness` skill                                                    |
+| Reviewing local commits as the `code-reviewer` subagent                                                                                                            | [`docs/engineering/code-review.md`](docs/engineering/code-review.md) and the `code-reviewer` skill                                                                             |
+| Reviewing what local commits render as the `visual-reviewer` subagent                                                                                              | [`docs/engineering/visual-review.md`](docs/engineering/visual-review.md) and the `visual-reviewer` skill                                                                       |
+| Running a drift review of one area of the design system                                                                                                            | [`docs/engineering/drift-review.md`](docs/engineering/drift-review.md) and the `drift-review` skill                                                                            |
+| Filing a delivery issue or writing a pull request body                                                                                                             | [`.github/ISSUE_TEMPLATE/delivery.md`](.github/ISSUE_TEMPLATE/delivery.md) and [`.github/pull_request_template.md`](.github/pull_request_template.md)                          |
+| Filing a confirmed defect                                                                                                                                          | [`.github/ISSUE_TEMPLATE/bug.md`](.github/ISSUE_TEMPLATE/bug.md) and [`docs/engineering/orchestration.md`](docs/engineering/orchestration.md)                                  |
+| Editing tokens, SCSS, CSS, component classes, utilities or brand-facing UI                                                                                         | [`packages/styles/AGENTS.md`](packages/styles/AGENTS.md) and [`packages/styles/BRAND_RULES.md`](packages/styles/BRAND_RULES.md)                                                |
+| Writing or changing `@pathableai/styles` Storybook stories                                                                                                         | [`packages/styles/STORY_AUTHORING.md`](packages/styles/STORY_AUTHORING.md)                                                                                                     |
+| Writing or changing HTML fixtures in `fixtures/`                                                                                                                   | [`fixtures/README.md`](fixtures/README.md)                                                                                                                                     |
+| Writing or changing component pages in `components/`, or the docs built from them                                                                                  | [`components/README.md`](components/README.md)                                                                                                                                 |
+| Changing `@pathableai/react` components or their public API                                                                                                        | [`packages/react/README.md`](packages/react/README.md)                                                                                                                         |
+| Writing or changing `@pathableai/react` stories                                                                                                                    | [`packages/react/STORYBOOK_STANDARD.md`](packages/react/STORYBOOK_STANDARD.md)                                                                                                 |
+| Using `@pathableai/react` as a consumer, or checking what its consumer guidance says                                                                               | [`packages/react/agent-guidance/pathable-react/`](packages/react/agent-guidance/pathable-react/)                                                                               |
+| Deciding whether a React change must update that consumer guidance                                                                                                 | [`.github/instructions/react-agent-guidance.instructions.md`](.github/instructions/react-agent-guidance.instructions.md)                                                       |
+| Adding or changing component tests, behavior contracts or parity checks                                                                                            | [`docs/testing/README.md`](docs/testing/README.md)                                                                                                                             |
+| Working on theming, `createTheme`, `ThemeProvider` or overridable tokens                                                                                           | [`docs/theming/consumer-guide.md`](docs/theming/consumer-guide.md) and [`docs/theming/token-vocabulary.md`](docs/theming/token-vocabulary.md)                                  |
+| Changing code in `@pathableai/styles` or `@pathableai/react` (changesets are for code changes only; docs-only changes need none, even docs shipped in the package) | [`.changeset/README.md`](.changeset/README.md)                                                                                                                                 |
 
 ## Where current behaviour is documented
 
-- `specs/<n>-<slug>/` folders are the historic record of one feature: what was
-  asked, planned and decided at the time. They are not updated afterwards and
-  may be stale. Do not treat an old spec, or a requirement ID such as `FR-008`
-  from one, as the current rule.
-- `docs/plans/` is also historical; see [`docs/plans/README.md`](docs/plans/README.md).
 - Current behaviour and rules belong in `docs/`, the package READMEs and the
-  package `AGENTS.md`/guidance files listed above. When a feature changes
-  behaviour, update those documents as part of the change; do not leave the
-  spec as the only description.
-- Do not move or rename existing specs or plans.
-- Spec Kit has a step that must be skipped here (the `speckit-plan` "agent
-  context update") and generated files that must not be hand-edited; see
-  [`docs/engineering/spec-kit.md`](docs/engineering/spec-kit.md).
+  package `AGENTS.md`/guidance files listed above. When behaviour changes,
+  update its current owner as part of the change.
+- Delivery issues and pull requests record the accepted scope, decisions and
+  evidence for one change. They are history, not a second current source.
+- `docs/plans/` is historical; see [`docs/plans/README.md`](docs/plans/README.md).
+  Do not move or rename existing plans or treat them as current rules.
 
 ## No check suppressions
 
@@ -103,12 +123,14 @@ Some of these rules are enforced for Claude Code by
 - Editing check configuration asks a human first: ESLint, stylelint,
   markdownlint, Prettier, lint-staged, Husky and commitlint configuration,
   `scripts/accessibility-exceptions.mjs`, any `tsconfig*.json`, GitHub
-  workflows, the hook itself and `.claude/settings.json`. The `Edit(...)`
+  workflows, the hook itself, `scripts/guardrail-paths.mjs` and
+  `.claude/settings.json`. The `Edit(...)`
   rules cover the `Write` and `MultiEdit` tools too.
 - A hook on `Bash`,
   [`scripts/claude/guardrail-write-hook.mjs`](scripts/claude/guardrail-write-hook.mjs)
   (logic in `scripts/guardrail-write.mjs`), catches shell writes to the
-  [guardrail paths](docs/engineering/git-workflow.md#guardrail-changes), which
+  [guardrail paths](docs/engineering/git-workflow.md#guardrail-changes) listed
+  in [`scripts/guardrail-paths.mjs`](scripts/guardrail-paths.mjs), which
   are wider than the `Edit(...)` rules above. Before a command runs
   (`PreToolUse`), it asks a person when the command names a guardrail path, or
   for deletes and copies a directory holding one, together with a redirection,
@@ -141,26 +163,19 @@ Some of these rules are enforced for Claude Code by
   ask a human. Its tests run with `pnpm test:tooling`.
 - Force pushes, `--no-verify`, `HUSKY=0`, `git reset --hard`, `git clean -f`,
   environment dumps, `.env` reads and publishing commands are denied.
-- A `PreToolUse` hook, `scripts/claude/pr-merge-hook.mjs`, runs the
-  [merge gate](docs/engineering/git-workflow.md#the-merge-gate) on every merge
-  attempt. It approves the GitHub MCP `merge_pull_request` call for a Standard
-  or Light pull request that passes, blocks one that fails, asks a person for
-  any other pull request, and always blocks GitHub auto-merge. `gh pr merge`
-  still asks first. Day-to-day git work
+- Agents never merge. `gh pr merge`, the GitHub MCP `merge_pull_request` tool
+  and auto-merge (`enable_pr_auto_merge`) are denied in
+  [`.claude/settings.json`](.claude/settings.json), as are the `gh api` and
+  `curl` routes to a pull request's `merge` and `auto_merge` endpoints and the
+  `mergePullRequest` and `enablePullRequestAutoMerge` mutations. The patterns
+  match command text, so a person reviews any other merge route; a person
+  merges every pull request. Day-to-day git work
   (`add`, `commit`, `checkout`, `switch`, `merge`, `pull`, `stash`, `tag` and
   non-force `push`), read-only git and `gh` commands and the check scripts
   below run without a prompt. Force pushes and `--no-verify` remain denied.
 
 Other agents (Codex, OpenCode, Cursor) are not covered by these settings, but
 the rules apply to them all the same.
-
-### Spec Kit files and the upgrade workflow
-
-The weekly Spec Kit upgrade owns most of `.specify/` and `.agents/skills/`, and
-`.claude/skills/speckit-*` are symlinks into `.agents/skills/`. What is
-generated, where project customisations live, and what to do before installing
-the `claude` integration are in
-[`docs/engineering/spec-kit.md`](docs/engineering/spec-kit.md).
 
 ## Before committing
 

@@ -48,6 +48,19 @@ permissions:
 env:
   REENABLED_FOLDERS: >-
     alert
+    breadcrumb
+    button
+    button-group
+    card
+    checkbox
+    collection
+    footer
+    icon-list
+    input-prefix-suffix
+    link
+    list
+    pagination
+    radio
     tokens-color
     tokens-color-state-tokens
     tokens-color-system-tokens

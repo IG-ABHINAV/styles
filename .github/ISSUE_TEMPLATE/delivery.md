@@ -25,14 +25,22 @@ title: ''
 ## Contract impact
 
 <!-- Which published contracts change, in source-first order:
-1. @pathableai/styles: tokens, CSS custom properties, .pathable-* classes, JavaScript helpers, or "none".
-2. @pathableai/react: exports, components, props, theming, or "none".
-3. Consumer agent guidance (packages/react/agent-guidance/pathable-react/): what changes, or "none".
-Say whether each change is additive, a visible change, or a removal or rename. If the React change needs a styles contract that does not exist yet, the styles change lands first. -->
+1. @pathableai/styles compiled CSS: tokens, CSS custom properties, static .pathable-* classes, assets, or "none".
+2. @pathableai/styles consumer agent guidance: installed component pages, package-wide selection or bug-reporting guidance, or "none".
+3. Retained/deferred surfaces: @pathableai/styles JavaScript, @pathableai/react API or React consumer guidance, but only when this issue explicitly puts one in scope; otherwise "none".
+Say whether each change is additive, a visible change, or a removal or rename. Static styles work must not expand into a retained/deferred surface. If an explicitly scoped React change needs a styles contract that does not exist yet, the styles change lands first. -->
 
 ## Dependencies
 
 <!-- Prerequisites and unresolved decisions. Use real issue URLs; do not invent numbers. Separate what blocks starting from what blocks release. -->
+
+## Verification claims
+
+<!-- For High work, number each observable claim V-001, V-002, and so on. State the meaningful violation, the observation that distinguishes it, and the evidence channel that can see it. Standard and Light work may use concise acceptance bullets instead. -->
+
+## Implementation approach
+
+<!-- Name the owning sources and the smallest independently releasable change. Record ordering, migration and rollback concerns. If the work is too large for one reviewable pull request, split it into linked delivery issues rather than an in-repository specification stack. A maintainer accepts this section and the claims before High new behaviour starts. -->
 
 ## Completion evidence
 

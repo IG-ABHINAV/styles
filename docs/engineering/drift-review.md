@@ -39,7 +39,7 @@ tests at the reviewed commit, and looks for:
 
 Lint, stylelint, token-lint, typecheck and test-runner findings are out of
 scope. The review may read their output as context but never files one. It
-does not review `specs/` or `docs/plans/`, which are historical.
+does not review `docs/plans/`, which are historical.
 
 The review is read-only. It edits no file, branch or pull request, opens no
 pull request and pushes nothing. It writes only GitHub issues and issue
@@ -51,7 +51,7 @@ Findings use the same fields as the code reviewer's findings, so a person
 triages both the same way:
 
 - `severity`: `blocking` when the code reviewer would block a slice that
-  introduced it today (a broken documented promise, a constitution violation,
+  introduced it today (a broken documented promise, an ownership or accessibility violation,
   a story or test that cannot fail); otherwise `advisory`
 - `category` from the table above
 - `file` and `line` at the reviewed commit
@@ -106,6 +106,13 @@ area with the most churn, breaking ties by the oldest review, then by the
 order below. It skips an area with no commit since its last review. When every
 area is unchanged, the run records that on the tracking issue and stops.
 
+During the current static styles refactor, scheduled selection also skips
+`styles-js`, `react-primitives`, `react-theming` and `react-agent-guidance`.
+Review one only when the maintainer explicitly requests that deferred area.
+This keeps existing code visible without allowing drift review to turn it into
+active modernization work; the boundary is owned by
+[Target state](target-state.md#retained-but-deferred-areas).
+
 ## Areas
 
 Each area names its owning documents and its paths as Git pathspecs relative
@@ -118,9 +125,8 @@ the same pull request.
 Tokens and foundations: color, typography, spacing, radius, elevation, fonts,
 the semantic layer, component custom properties and the default theme.
 
-- Owners: [`packages/styles/AGENTS.md`](../../packages/styles/AGENTS.md),
-  [`BRAND_RULES.md`](../../packages/styles/BRAND_RULES.md), constitution II,
-  III and VIII
+- Owners: [`packages/styles/AGENTS.md`](../../packages/styles/AGENTS.md) and
+  [`BRAND_RULES.md`](../../packages/styles/BRAND_RULES.md)
 - Paths:
   - `packages/styles/AGENTS.md`
   - `packages/styles/BRAND_RULES.md`
@@ -173,10 +179,11 @@ The `.pathable-*` component classes and their styles stories.
 
 ### `styles-js`
 
-The framework-neutral JavaScript helpers `@pathableai/styles` publishes.
+The framework-neutral JavaScript helpers `@pathableai/styles` still publishes.
+This is a retained, deferred area, not a current refactor target.
 
-- Owners: [`packages/styles/README.md`](../../packages/styles/README.md),
-  constitution VII and XI
+- Owners: [`packages/styles/README.md`](../../packages/styles/README.md) and
+  [Target state](target-state.md)
 - Paths:
   - `packages/styles/README.md`
   - `packages/styles/src/js`
@@ -188,8 +195,8 @@ The framework-neutral JavaScript helpers `@pathableai/styles` publishes.
 The `@pathableai/react` components, their internals, entry point and stories.
 
 - Owners: [`packages/react/README.md`](../../packages/react/README.md),
-  [`STORYBOOK_STANDARD.md`](../../packages/react/STORYBOOK_STANDARD.md),
-  [Component testing](../testing/README.md), constitution IV and V
+  [`STORYBOOK_STANDARD.md`](../../packages/react/STORYBOOK_STANDARD.md), and
+  [Component testing](../testing/README.md)
 - Paths:
   - `packages/react/README.md`
   - `packages/react/STORYBOOK_STANDARD.md`
@@ -213,9 +220,27 @@ The `@pathableai/react` components, their internals, entry point and stories.
 
 ### `agent-guidance`
 
-The consumer agent guidance shipped with `@pathableai/react`, and its checks.
+The installed styles component guidance and the planned styles package-wide
+guidance.
 
-- Owners: [`react-agent-guidance.instructions.md`](../../.github/instructions/react-agent-guidance.instructions.md)
+- Owners: [Repository intent](intent.md), [Target state](target-state.md),
+  [`components/README.md`](../../components/README.md)
+- Paths:
+  - `components`
+  - `fixtures`
+  - `packages/styles/AGENTS.md`
+  - `packages/styles/components`
+  - `scripts/component-docs`
+
+### `react-agent-guidance`
+
+The retained consumer guidance shipped with `@pathableai/react` and the checks
+that keep it synchronized. Scheduled review of this area is deferred unless
+the maintainer explicitly requests it.
+
+- Owners:
+  [`react-agent-guidance.instructions.md`](../../.github/instructions/react-agent-guidance.instructions.md),
+  [Repository intent](intent.md) and [Target state](target-state.md)
 - Paths:
   - `.github/instructions/react-agent-guidance.instructions.md`
   - `packages/react/agent-guidance`
@@ -229,9 +254,8 @@ The consumer agent guidance shipped with `@pathableai/react`, and its checks.
 Both Storybook apps, the shared behaviour contracts, the test-runner
 lifecycle and the accessibility exceptions.
 
-- Owners: [Component testing](../testing/README.md),
-  [Tooling and structure](../testing/tooling-and-structure.md), constitution
-  XIV and XVI
+- Owners: [Component testing](../testing/README.md) and
+  [Tooling and structure](../testing/tooling-and-structure.md)
 - Paths:
   - `docs/testing/tooling-and-structure.md`
   - `docs/testing/behavior-parity.md`
