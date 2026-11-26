@@ -21,3 +21,7 @@
 .pathable-form-group > .pathable-label:first-child {
   margin-top: 0;
 }
+
+.pathable-form-group--error {
+  @extend .usa-form-group--error;
+}
