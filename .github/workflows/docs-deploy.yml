@@ -30,17 +30,21 @@ jobs:
       - name: Build docs for Pages
         run: STORYBOOK_BUILD=true pnpm --filter @pathable/storybook build-storybook
 
-      # Disabled temporarily during the refactor (docs/engineering/git-workflow.md); re-enable when the refactor lands.
       - name: Token custom property lint
-        if: false
         run: pnpm lint:tokens
 
-      # Disabled temporarily during the refactor (docs/engineering/git-workflow.md); re-enable when the refactor lands.
-      - name: Storybook coverage
-        if: false
-        run: pnpm storybook:coverage
-
-      # Disabled temporarily during the refactor (docs/engineering/git-workflow.md); re-enable when the refactor lands.
+      # The accessibility test run writes the component page records that the
+      # two steps below save. Pull requests that change only component pages
+      # restore these records instead of building and testing the HTML
+      # Storybook (Storybook Quality's component-pages job). All three are
+      # disabled with that job until check:component-pages:executed passes;
+      # re-enable them together. As written they cannot pass here: the setup
+      # step does not install Playwright, and the only build uses the
+      # /styles/ base path while this step serves it at the root. Re-enabling
+      # needs install_playwright and an unprefixed build to test, with the
+      # Pages build after the records are saved. Pull requests already run
+      # these accessibility tests (Storybook Quality's accessibility-tests
+      # job).
       - name: Storybook accessibility tests
         if: false
         run: |
@@ -64,17 +68,11 @@ jobs:
           kill $SERVE_PID 2>/dev/null || true
           exit $TEST_EXIT
 
-      # Pull requests that change only component pages restore these records
-      # instead of building and testing the HTML Storybook (Storybook
-      # Quality's component-pages job). Saved before the Pages rebuild below
-      # rewrites index.json, so the records stay newer than the index.
-      # Disabled temporarily during the refactor (docs/engineering/git-workflow.md); re-enable when the refactor lands.
       - name: Component page records cache key
         if: false
         id: records-key
         run: echo "key=$(node scripts/component-pages-records-key.mjs)" >> "$GITHUB_OUTPUT"
 
-      # Disabled temporarily during the refactor (docs/engineering/git-workflow.md); re-enable when the refactor lands.
       - name: Save component page records
         if: false
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -83,11 +81,6 @@ jobs:
             apps/storybook/test-results/component-pages
             apps/storybook/storybook-static/index.json
           key: ${{ steps.records-key.outputs.key }}
-
-      # Disabled temporarily during the refactor (docs/engineering/git-workflow.md); re-enable when the refactor lands.
-      - name: Visual smoke tests
-        if: false
-        run: pnpm test:visual
 
       - name: Create .nojekyll
         run: touch apps/storybook/storybook-static/.nojekyll
